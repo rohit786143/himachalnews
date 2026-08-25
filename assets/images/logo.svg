@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 120" width="600" height="120">
+  <defs>
+    <linearGradient id="logoRedGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF2E3B" />
+      <stop offset="100%" stop-color="#B80710" />
+    </linearGradient>
+    <clipPath id="logo-clip">
+      <rect width="600" height="120" rx="12" ry="12" />
+    </clipPath>
+  </defs>
+  
+  <g clip-path="url(#logo-clip)">
+    <!-- Right Black Background -->
+    <rect x="0" y="0" width="600" height="120" fill="#141414" />
+    
+    <!-- Left Red Box -->
+    <rect x="0" y="0" width="125" height="120" fill="url(#logoRedGrad)" />
+    
+    <!-- Stylized Geometric 'HN' Mountains in White -->
+    <g fill="#FFFFFF">
+      <polygon points="26,88 52,32 64,54 42,94" />
+      <polygon points="56,88 78,20 102,88 88,88 78,56 68,88" />
+    </g>
+    
+    <!-- Bold Devanagari "हिमाचल न्यूज़" Text -->
+    <text x="145" y="82" font-family="'Yantramanav', 'Hind', 'Arial Black', sans-serif" font-size="70" font-weight="900" fill="#FFFFFF" letter-spacing="1.5">हिमाचल न्यूज़</text>
+  </g>
+</svg>
