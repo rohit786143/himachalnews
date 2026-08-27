@@ -146,7 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <label class="form-label" for="profileDesignation">पदनाम (Designation / Bureau)</label>
                             <input type="text" id="profileDesignation" name="designation" class="form-control" 
                                    value="<?= sanitize($user['designation']) ?>" 
-                                   placeholder="उदा: केलांग संवाददाता • Khabar 24">
+                                   placeholder="उदा: केलांग संवाददाता • News 24 Himachal">
                         </div>
                     </div>
 

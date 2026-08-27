@@ -1,7 +1,7 @@
 <?php
 /**
  * Article Details Page (article.php)
- * Himachal News Portal - Khabar 24
+ * News 24 Himachal
  */
 
 require_once __DIR__ . '/config/db.php';
@@ -15,7 +15,7 @@ $article = getArticleBySlug($pdo, $slug);
 // Handle 404 if article not found
 if (!$article) {
     header("HTTP/1.0 404 Not Found");
-    $pageTitle = 'समाचार नहीं मिला - Khabar 24';
+    $pageTitle = 'समाचार नहीं मिला - News 24 Himachal';
     require_once __DIR__ . '/includes/header.php';
     echo '<div class="container" style="padding: 80px 20px; text-align: center;">
             <i class="fas fa-exclamation-triangle" style="font-size: 3.5rem; color: #E50914; margin-bottom: 20px;"></i>
@@ -33,7 +33,7 @@ incrementArticleViews($pdo, $article['id']);
 // Fetch Related Articles
 $relatedArticles = getRelatedNews($pdo, $article['category_id'], $article['id'], 3);
 
-$pageTitle = sanitize($article['title']) . ' - Khabar 24';
+$pageTitle = sanitize($article['title']) . ' - News 24 Himachal';
 $pageDescription = sanitize($article['excerpt'] ?? mb_substr(strip_tags($article['content']), 0, 150) . '...');
 $readingTime = estimateReadingTime($article['content']);
 
@@ -79,7 +79,7 @@ require_once __DIR__ . '/includes/header.php';
                 $authorId = (int)($article['author_id'] ?? ($article['editor_id'] ?? 1));
                 $authorAvatar = !empty($article['editor_avatar']) ? $article['editor_avatar'] : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80';
                 $authorName = !empty($article['editor_name']) ? $article['editor_name'] : ($article['author'] ?? 'केलांग संवाददाता');
-                $authorDesignation = !empty($article['editor_designation']) ? $article['editor_designation'] : 'संपादकीय डेस्क • Khabar 24';
+                $authorDesignation = !empty($article['editor_designation']) ? $article['editor_designation'] : 'संपादकीय डेस्क • News 24 Himachal';
                 ?>
                 <div class="article-meta-bar">
                     <a href="author.php?id=<?= $authorId ?>" class="meta-author-link" style="text-decoration: none; color: inherit; display: inline-flex;" title="<?= sanitize($authorName) ?> की प्रोफाइल एवं खबरें देखें">
@@ -126,6 +126,43 @@ require_once __DIR__ . '/includes/header.php';
                     <button class="share-btn copy copy-share-btn">
                         <i class="fas fa-link"></i> लिंक कॉपी करें
                     </button>
+                </div>
+            <!-- 🎙️ Compact Text-to-Speech (खबर सुनें) Audio Bar -->
+            <div class="news-tts-compact" id="newsTtsPlayer">
+                <!-- Small Round Play Button -->
+                <button type="button" class="tts-compact-play-btn" id="ttsPlayBtn" title="यह खबर सुनें">
+                    <i class="fas fa-play" id="ttsPlayIcon"></i>
+                </button>
+
+                <!-- Audio Info & Progress -->
+                <div class="tts-compact-info">
+                    <div class="tts-compact-title-row">
+                        <span class="tts-compact-label"><i class="fas fa-headphones" style="color: var(--primary-red); font-size: 0.78rem;"></i> यह खबर सुनें</span>
+                        <span class="tts-compact-status" id="ttsStatusText">~<?= $readingTime ?> मिनट</span>
+                        <!-- Mini Wave Equalizer -->
+                        <div class="tts-mini-waves" id="ttsWaveEqualizer">
+                            <span></span><span></span><span></span><span></span>
+                        </div>
+                    </div>
+                    <!-- Slim Progress Track -->
+                    <div class="tts-compact-progress-track">
+                        <div class="tts-compact-progress-fill" id="ttsProgressFill" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <!-- Small Control Actions -->
+                <div class="tts-compact-actions">
+                    <!-- Stop Button -->
+                    <button type="button" class="tts-compact-icon-btn" id="ttsStopBtn" title="ऑडियो बंद करें" disabled>
+                        <i class="fas fa-stop"></i>
+                    </button>
+                    <!-- Speed Select -->
+                    <select id="ttsRateSelect" class="tts-compact-speed-select" title="बोलने की गति (Playback Speed)">
+                        <option value="0.85">0.8x</option>
+                        <option value="1.0" selected>1.0x</option>
+                        <option value="1.25">1.2x</option>
+                        <option value="1.5">1.5x</option>
+                    </select>
                 </div>
             </div>
 
@@ -221,5 +258,209 @@ require_once __DIR__ . '/includes/header.php';
 
     </div>
 </main>
+
+<!-- Text-to-Speech (खबर सुनें) JavaScript Engine -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const playBtn = document.getElementById('ttsPlayBtn');
+    const stopBtn = document.getElementById('ttsStopBtn');
+    const playIcon = document.getElementById('ttsPlayIcon');
+    const playLabel = document.getElementById('ttsPlayLabel');
+    const statusText = document.getElementById('ttsStatusText');
+    const progressFill = document.getElementById('ttsProgressFill');
+    const playerContainer = document.getElementById('newsTtsPlayer');
+    const rateSelect = document.getElementById('ttsRateSelect');
+
+    if (!('speechSynthesis' in window)) {
+        if (playerContainer) {
+            statusText.textContent = "आपका ब्राउज़र स्पीच सपोर्ट नहीं करता।";
+            if (playBtn) playBtn.disabled = true;
+        }
+        return;
+    }
+
+    const synth = window.speechSynthesis;
+    let sentences = [];
+    let currentSentenceIndex = 0;
+    let isPlaying = false;
+    let isPaused = false;
+    let hindiVoice = null;
+
+    function loadVoices() {
+        const voices = synth.getVoices();
+        hindiVoice = voices.find(v => v.lang.includes('hi') || v.lang.includes('HI')) 
+                  || voices.find(v => v.lang.includes('IN') || v.name.toLowerCase().includes('hindi'))
+                  || voices.find(v => v.lang.includes('en-IN'))
+                  || voices[0];
+    }
+
+    loadVoices();
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
+    function extractArticleSentences() {
+        const title = document.querySelector('.article-main-title') ? document.querySelector('.article-main-title').innerText : '';
+        const bodyElem = document.querySelector('.article-body-content');
+        let bodyText = '';
+        if (bodyElem) {
+            const clone = bodyElem.cloneNode(true);
+            const scripts = clone.querySelectorAll('script, style, .social-share-box, button');
+            scripts.forEach(s => s.remove());
+            bodyText = clone.innerText;
+        }
+
+        const fullText = title + "। " + bodyText;
+        return fullText
+            .split(/(?<=[।!?\.\n])\s+/)
+            .map(s => s.trim())
+            .filter(s => s.length > 2);
+    }
+
+    function speakCurrentSentence() {
+        if (!isPlaying || currentSentenceIndex >= sentences.length) {
+            finishSpeech();
+            return;
+        }
+
+        const currentText = sentences[currentSentenceIndex];
+        const utterance = new SpeechSynthesisUtterance(currentText);
+
+        if (hindiVoice) {
+            utterance.voice = hindiVoice;
+        }
+        utterance.lang = 'hi-IN';
+        utterance.rate = parseFloat(rateSelect.value) || 1.0;
+        utterance.pitch = 1.0;
+
+        utterance.onend = function() {
+            if (isPlaying && !isPaused) {
+                currentSentenceIndex++;
+                updateProgress();
+                speakCurrentSentence();
+            }
+        };
+
+        utterance.onerror = function(e) {
+            console.log('TTS Error:', e);
+            if (isPlaying && !isPaused) {
+                currentSentenceIndex++;
+                updateProgress();
+                speakCurrentSentence();
+            }
+        };
+
+        synth.speak(utterance);
+    }
+
+    function updateProgress() {
+        if (sentences.length === 0) return;
+        const pct = Math.min(100, Math.round(((currentSentenceIndex + 1) / sentences.length) * 100));
+        progressFill.style.width = pct + '%';
+        statusText.textContent = `खबर पढ़ी जा रही है... (${pct}% पूर्ण)`;
+    }
+
+    function startSpeech() {
+        if (sentences.length === 0) {
+            sentences = extractArticleSentences();
+        }
+
+        if (sentences.length === 0) {
+            statusText.textContent = "सामग्री नहीं मिली।";
+            return;
+        }
+
+        isPlaying = true;
+        isPaused = false;
+        playerContainer.classList.add('playing');
+        playIcon.className = 'fas fa-pause';
+        playBtn.title = 'ऑडियो रोकें (Pause)';
+        stopBtn.disabled = false;
+        updateProgress();
+        speakCurrentSentence();
+    }
+
+    function pauseSpeech() {
+        if (synth.speaking && !synth.paused) {
+            synth.pause();
+            isPaused = true;
+            playerContainer.classList.remove('playing');
+            playIcon.className = 'fas fa-play';
+            playBtn.title = 'जारी रखें (Resume)';
+            statusText.textContent = 'ऑडियो रोका गया (Paused)';
+        }
+    }
+
+    function resumeSpeech() {
+        if (synth.paused) {
+            synth.resume();
+            isPaused = false;
+            playerContainer.classList.add('playing');
+            playIcon.className = 'fas fa-pause';
+            playBtn.title = 'ऑडियो रोकें (Pause)';
+            updateProgress();
+        } else {
+            speakCurrentSentence();
+        }
+    }
+
+    function stopSpeech() {
+        synth.cancel();
+        isPlaying = false;
+        isPaused = false;
+        currentSentenceIndex = 0;
+        playerContainer.classList.remove('playing');
+        playIcon.className = 'fas fa-play';
+        playBtn.title = 'यह खबर सुनें (Play)';
+        stopBtn.disabled = true;
+        progressFill.style.width = '0%';
+        statusText.textContent = 'रीसेट • प्ले दबाएं';
+    }
+
+    function finishSpeech() {
+        synth.cancel();
+        isPlaying = false;
+        isPaused = false;
+        currentSentenceIndex = 0;
+        playerContainer.classList.remove('playing');
+        playIcon.className = 'fas fa-rotate-left';
+        playBtn.title = 'पुनः सुनें (Replay)';
+        stopBtn.disabled = true;
+        progressFill.style.width = '100%';
+        statusText.textContent = '✓ वाचन पूर्ण हुआ';
+    }
+
+    if (playBtn) {
+        playBtn.addEventListener('click', function() {
+            if (!isPlaying) {
+                startSpeech();
+            } else if (isPaused) {
+                resumeSpeech();
+            } else {
+                pauseSpeech();
+            }
+        });
+    }
+
+    if (stopBtn) {
+        stopBtn.addEventListener('click', function() {
+            stopSpeech();
+        });
+    }
+
+    if (rateSelect) {
+        rateSelect.addEventListener('change', function() {
+            if (isPlaying && !isPaused) {
+                synth.cancel();
+                speakCurrentSentence();
+            }
+        });
+    }
+
+    window.addEventListener('beforeunload', function() {
+        synth.cancel();
+    });
+});
+</script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

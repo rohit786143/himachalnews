@@ -1,24 +1,34 @@
 <?php
 /**
  * Database & Application Configuration
- * Himachal News Portal - Khabar 24
+ * News 24 Himachal
  */
 
 if (!defined('APP_NAME')) {
-    define('APP_NAME', 'हिमाचल न्यूज़');
+    define('APP_NAME', 'News 24 Himachal');
 }
 define('APP_TAGLINE', 'हिमाचल प्रदेश का नंबर 1 हिंदी न्यूज़ पोर्टल');
-define('APP_URL', 'http://localhost:8000');
-define('APP_EMAIL', 'editor@himachalnews24.com');
-define('APP_PHONE', '+91 177 265 8900');
-define('APP_ADDRESS', 'प्रेस एवेन्यू, माल रोड, शिमला, हिमाचल प्रदेश - 171001');
+// Multi-Environment Detection (Local XAMPP vs Hostinger Live)
+$isLocalEnv = (
+    (isset($_SERVER['HTTP_HOST']) && (strpos($_SERVER['HTTP_HOST'], 'localhost') !== false || strpos($_SERVER['HTTP_HOST'], '127.0.0.1') !== false))
+    || (php_sapi_name() === 'cli' && empty($_SERVER['HTTP_HOST']))
+);
 
-// Database Credentials
-define('DB_HOST', 'localhost');
-define('DB_PORT', '3306');
-define('DB_NAME', 'news_db');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+if ($isLocalEnv) {
+    define('APP_URL', 'http://localhost:8000');
+    define('DB_HOST', 'localhost');
+    define('DB_PORT', '3306');
+    define('DB_NAME', 'news_db');
+    define('DB_USER', 'root');
+    define('DB_PASS', '');
+} else {
+    define('APP_URL', 'https://news24hp.com');
+    define('DB_HOST', 'localhost');
+    define('DB_PORT', '3306');
+    define('DB_NAME', 'u238667987_news24hp');
+    define('DB_USER', 'u238667987_news24hp');
+    define('DB_PASS', 'Rohit@40014');
+}
 define('DB_CHARSET', 'utf8mb4');
 
 /**

@@ -1,7 +1,7 @@
 <?php
 /**
  * Core Helper Functions
- * Himachal News Portal - Khabar 24
+ * News 24 Himachal
  */
 
 require_once __DIR__ . '/../config/db.php';
@@ -18,25 +18,127 @@ function sanitize($data) {
 
 /**
  * Get Navigation Categories (Parents with Child Subcategories)
+ * Queries 'SELECT * FROM categories' without any status constraints
  */
 function getNavigationCategories($pdo) {
-    try {
-        // Get parent categories
-        $stmt = $pdo->prepare("SELECT * FROM categories WHERE parent_id IS NULL ORDER BY display_order ASC, id ASC");
-        $stmt->execute();
-        $parents = $stmt->fetchAll();
+    if (!$pdo) {
+        return [];
+    }
 
-        // Get subcategories for each parent
-        foreach ($parents as &$parent) {
-            $subStmt = $pdo->prepare("SELECT * FROM categories WHERE parent_id = ? ORDER BY display_order ASC, name ASC");
-            $subStmt->execute([$parent['id']]);
-            $parent['subcategories'] = $subStmt->fetchAll();
+    try {
+        // Direct query without WHERE status (compatible with tables having only id, name, slug)
+        $stmt = $pdo->query("SELECT * FROM `categories`");
+        $allCategories = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+
+        if (empty($allCategories)) {
+            return [];
         }
-        unset($parent);
+
+        $sample = $allCategories[0];
+        $hasParentId = array_key_exists('parent_id', $sample);
+        $hasIsNav = array_key_exists('is_nav', $sample);
+        $hasDisplayOrder = array_key_exists('display_order', $sample);
+
+        $parents = [];
+        $childrenByParent = [];
+
+        if ($hasParentId) {
+            foreach ($allCategories as $cat) {
+                if (empty($cat['parent_id'])) {
+                    if ($hasIsNav) {
+                        if ((int)$cat['is_nav'] === 1) {
+                            $parents[] = $cat;
+                        }
+                    } else {
+                        $parents[] = $cat;
+                    }
+                } else {
+                    $childrenByParent[$cat['parent_id']][] = $cat;
+                }
+            }
+
+            // Fallback: If no categories were flagged as is_nav=1, show all root parents
+            if (empty($parents)) {
+                foreach ($allCategories as $cat) {
+                    if (empty($cat['parent_id'])) {
+                        $parents[] = $cat;
+                    }
+                }
+            }
+        } else {
+            $parents = $allCategories;
+        }
+
+        // Sort by display_order if column exists
+        if ($hasDisplayOrder) {
+            usort($parents, function($a, $b) {
+                return ((int)($a['display_order'] ?? 0)) <=> ((int)($b['display_order'] ?? 0));
+            });
+        }
+
+        // Attach subcategories
+        foreach ($parents as &$p) {
+            $p['subcategories'] = $childrenByParent[$p['id']] ?? [];
+        }
+        unset($p);
 
         return $parents;
-    } catch (PDOException $e) {
+    } catch (Exception $e) {
         return [];
+    }
+}
+
+/**
+ * Auto-ensure `is_nav` column exists and the 9 main navbar categories are active
+ */
+function ensureNavCategoriesConfigured($pdo) {
+    try {
+        // 1. Check if column `is_nav` exists in `categories` table
+        $columns = $pdo->query("SHOW COLUMNS FROM `categories` LIKE 'is_nav'")->fetchAll();
+        if (empty($columns)) {
+            $pdo->exec("ALTER TABLE `categories` ADD COLUMN `is_nav` TINYINT(1) DEFAULT 0 AFTER `display_order`");
+        }
+
+        // 2. Main 9 categories definition
+        $navMap = [
+            'breaking-news'    => ['name' => 'ब्रेकिंग न्यूज़', 'order' => 1],
+            'rajniti'          => ['name' => 'राजनीति', 'order' => 2],
+            'himachal-darshan' => ['name' => 'हिमाचल दर्शन', 'order' => 3],
+            'manoranjan'       => ['name' => 'मनोरंजन', 'order' => 4],
+            'khel'             => ['name' => 'खेल', 'order' => 5],
+            'rashiphal'        => ['name' => 'राशिफल', 'order' => 6],
+            'crime'            => ['name' => 'क्राइम', 'order' => 7],
+            'desh'             => ['name' => 'देश', 'order' => 8],
+            'duniya'           => ['name' => 'दुनिया', 'order' => 9]
+        ];
+
+        // Also fix legacy slugs if present in DB
+        $pdo->exec("UPDATE `categories` SET `slug` = 'rajniti', `name` = 'राजनीति' WHERE `slug` IN ('politics', 'siyasat')");
+        $pdo->exec("UPDATE `categories` SET `slug` = 'crime', `name` = 'क्राइम' WHERE `slug` IN ('jurm', 'personalities', 'hasti')");
+        $pdo->exec("UPDATE `categories` SET `slug` = 'khel', `name` = 'खेल' WHERE `slug` = 'sports'");
+        $pdo->exec("UPDATE `categories` SET `slug` = 'manoranjan', `name` = 'मनोरंजन' WHERE `slug` = 'entertainment'");
+        $pdo->exec("UPDATE `categories` SET `slug` = 'desh', `name` = 'देश' WHERE `slug` = 'india'");
+        $pdo->exec("UPDATE `categories` SET `slug` = 'duniya', `name` = 'दुनिया' WHERE `slug` = 'world'");
+
+        // Reset is_nav = 0 for other parent categories
+        $pdo->exec("UPDATE `categories` SET `is_nav` = 0 WHERE `parent_id` IS NULL");
+
+        // Insert or update the 9 main categories
+        foreach ($navMap as $slug => $data) {
+            $stmt = $pdo->prepare("SELECT id FROM `categories` WHERE `slug` = ? LIMIT 1");
+            $stmt->execute([$slug]);
+            $existing = $stmt->fetch();
+
+            if ($existing) {
+                $upd = $pdo->prepare("UPDATE `categories` SET `name` = ?, `display_order` = ?, `is_nav` = 1, `parent_id` = NULL WHERE `id` = ?");
+                $upd->execute([$data['name'], $data['order'], $existing['id']]);
+            } else {
+                $ins = $pdo->prepare("INSERT INTO `categories` (`parent_id`, `name`, `slug`, `display_order`, `is_nav`) VALUES (NULL, ?, ?, ?, 1)");
+                $ins->execute([$data['name'], $slug, $data['order']]);
+            }
+        }
+    } catch (Exception $e) {
+        // ignore
     }
 }
 
@@ -640,4 +742,103 @@ function handleImageUpload($file, $subDir = 'avatars') {
 
     return null;
 }
+
+/**
+ * Get Active Live Bulletin or Latest Recorded Bulletin
+ */
+function getActiveLiveBulletin($pdo) {
+    try {
+        // Check for explicitly active live stream
+        $stmt = $pdo->prepare("SELECT * FROM `live_bulletins` WHERE `is_live` = 1 ORDER BY `created_at` DESC LIMIT 1");
+        $stmt->execute();
+        $live = $stmt->fetch();
+        if ($live) {
+            return $live;
+        }
+
+        // Fallback to latest recorded bulletin video
+        $fallbackStmt = $pdo->prepare("SELECT * FROM `live_bulletins` ORDER BY `created_at` DESC LIMIT 1");
+        $fallbackStmt->execute();
+        return $fallbackStmt->fetch();
+    } catch (PDOException $e) {
+        return null;
+    }
+}
+
+/**
+ * Get Real-Time Timeline Updates for a Bulletin
+ */
+function getBulletinUpdates($pdo, $bulletinId, $limit = 50) {
+    try {
+        $stmt = $pdo->prepare("
+            SELECT * FROM `bulletin_updates` 
+            WHERE `bulletin_id` = ? 
+            ORDER BY `created_at` DESC, `id` DESC 
+            LIMIT ?
+        ");
+        $stmt->bindValue(1, (int)$bulletinId, PDO::PARAM_INT);
+        $stmt->bindValue(2, (int)$limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    } catch (PDOException $e) {
+        return [];
+    }
+}
+
+/**
+ * Get Past / Recent Video Bulletins
+ */
+function getPastBulletins($pdo, $excludeId = 0, $limit = 6) {
+    try {
+        $stmt = $pdo->prepare("
+            SELECT * FROM `live_bulletins` 
+            WHERE `id` != ? 
+            ORDER BY `created_at` DESC 
+            LIMIT ?
+        ");
+        $stmt->bindValue(1, (int)$excludeId, PDO::PARAM_INT);
+        $stmt->bindValue(2, (int)$limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    } catch (PDOException $e) {
+        return [];
+    }
+}
+
+/**
+ * Normalize any video URL (YouTube watch, live, short, embed) into responsive embed iframe src
+ */
+function normalizeVideoEmbedUrl($url) {
+    $url = trim($url);
+    if (empty($url)) {
+        return 'https://www.youtube.com/embed/live_stream?channel=default';
+    }
+
+    // YouTube formats:
+    // https://www.youtube.com/watch?v=VIDEO_ID
+    // https://youtu.be/VIDEO_ID
+    // https://www.youtube.com/live/VIDEO_ID
+    // https://www.youtube.com/embed/VIDEO_ID
+    if (preg_match('#(?:youtube\.com/(?:watch\?v=|live/|embed/)|youtu\.be/)([a-zA-Z0-9_-]{11})#i', $url, $matches)) {
+        return 'https://www.youtube-nocookie.com/embed/' . $matches[1] . '?autoplay=1&mute=0&rel=0&enablejsapi=1';
+    }
+
+    // If it's already an embed link (e.g. Facebook plugins or iframe src)
+    if (stripos($url, 'embed') !== false || stripos($url, 'plugins/video.php') !== false) {
+        return $url;
+    }
+
+    return $url;
+}
+
+/**
+ * Extract YouTube Thumbnail
+ */
+function getYouTubeThumbnail($url) {
+    if (preg_match('#(?:youtube\.com/(?:watch\?v=|live/|embed/)|youtu\.be/)([a-zA-Z0-9_-]{11})#i', $url, $matches)) {
+        return 'https://img.youtube.com/vi/' . $matches[1] . '/hqdefault.jpg';
+    }
+    return '/assets/images/video_placeholder.jpg';
+}
+
 

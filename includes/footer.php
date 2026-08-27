@@ -1,7 +1,7 @@
 <?php
 /**
  * Footer Component
- * Himachal News Portal - Khabar 24
+ * News 24 Himachal
  */
 ?>
     <footer class="main-footer">
@@ -10,7 +10,7 @@
                 <!-- Column 1: About Portal -->
                 <div class="footer-col footer-about">
                     <div style="margin-bottom: 16px;">
-                        <img src="assets/images/logo.svg" alt="हिमाचल न्यूज़" style="max-width: 192px; height: auto; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
+                        <img src="assets/images/logo.png" alt="News 24 Himachal" style="max-width: 192px; height: auto; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
                     </div>
                     <p>देवभूमि हिमाचल प्रदेश का सबसे विश्वसनीय, निष्पक्ष और अग्रणी डिजिटल समाचार पोर्टल। शिमला से लेकर चंबा तक हर खबर सबसे पहले आप तक।</p>
                     <div style="font-size: 0.85rem; color: #A0AEC0; display: flex; flex-direction: column; gap: 6px;">
@@ -20,16 +20,19 @@
                     </div>
                 </div>
 
-                <!-- Column 2: Quick Categories -->
+                <!-- Column 2: Quick Categories (Exact Match to Home Navigation Bar - 2 Columns) -->
                 <div class="footer-col footer-links">
                     <h3 class="footer-col-title">मुख्य श्रेणियां</h3>
-                    <ul>
-                        <li><a href="category.php?cat=himachal-news"><i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i> हिमाचल न्यूज़</a></li>
+                    <ul class="footer-2col-list">
+                        <li><a href="category.php?cat=breaking-news"><i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i> ब्रेकिंग न्यूज़</a></li>
+                        <li><a href="category.php?cat=rajniti"><i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i> राजनीति</a></li>
                         <li><a href="category.php?cat=himachal-darshan"><i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i> हिमाचल दर्शन</a></li>
-                        <li><a href="category.php?cat=politics"><i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i> सियासत</a></li>
-                        <li><a href="category.php?cat=sports"><i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i> खेल समाचार</a></li>
-                        <li><a href="category.php?cat=entertainment"><i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i> मनोरंजन</a></li>
-                        <li><a href="category.php?cat=personalities"><i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i> हमारे गौरव (हस्ती)</a></li>
+                        <li><a href="category.php?cat=manoranjan"><i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i> मनोरंजन</a></li>
+                        <li><a href="category.php?cat=khel"><i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i> खेल</a></li>
+                        <li><a href="category.php?cat=rashiphal"><i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i> राशिफल</a></li>
+                        <li><a href="category.php?cat=crime"><i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i> क्राइम</a></li>
+                        <li><a href="category.php?cat=desh"><i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i> देश</a></li>
+                        <li><a href="category.php?cat=duniya"><i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i> दुनिया</a></li>
                     </ul>
                 </div>
 
@@ -61,12 +64,9 @@
         </div>
 
         <div class="footer-bottom">
-            <div class="container footer-bottom-inner">
-                <div>
-                    &copy; <?= date('Y') ?> <strong>Khabar 24 (Himachal News)</strong>. सर्वाधिकार सुरक्षित।
-                </div>
-                <div>
-                    Designed & Built with <i class="fas fa-heart" style="color: var(--primary-red);"></i> for Devbhoomi Himachal Pradesh
+            <div class="container footer-bottom-inner" style="justify-content: center; text-align: center;">
+                <div style="text-align: center; width: 100%; font-size: 0.92rem; color: #94A3B8; font-weight: 500; letter-spacing: 0.3px;">
+                    &copy; <?= date('Y') ?> all rights reserved with News 24 Himachal.
                 </div>
             </div>
         </div>
@@ -82,7 +82,7 @@
             
             <div class="news-modal-header">
                 <div class="modal-badge"><i class="fas fa-bell"></i> 1-क्लिक न्यूज़ अलर्ट</div>
-                <h2 class="modal-title">हिमाचल न्यूज़ लाइव अपडेट्स</h2>
+                <h2 class="modal-title">News 24 Himachal लाइव अपडेट्स</h2>
                 <p class="modal-desc">देवभूमि हिमाचल प्रदेश की हर ब्रेकिंग न्यूज़, मौसम अलर्ट और सरकारी आदेश सीधे अपने डिवाइस पर पाएं।</p>
             </div>
 
@@ -117,7 +117,7 @@
                         <i class="fas fa-check-circle"></i>
                     </div>
                     <h3>बधाई हो! आपका डिवाइस सब्सक्राइब हो चुका है</h3>
-                    <p>अब आपको हिमाचल न्यूज़ के महत्वपूर्ण और ब्रेकिंग अलर्ट सीधे इस स्क्रीन पर मिलते रहेंगे।</p>
+                    <p>अब आपको News 24 Himachal के महत्वपूर्ण और ब्रेकिंग अलर्ट सीधे इस स्क्रीन पर मिलते रहेंगे।</p>
                     <button type="button" class="modal-success-close-btn" id="modal-success-done-btn">खबरें पढ़ें</button>
                 </div>
             </div>
@@ -135,7 +135,7 @@
             <div class="news-modal-header info-header">
                 <div class="modal-badge-green"><i class="fas fa-shield-alt"></i> सक्रिय सब्सक्रिप्शन</div>
                 <h2 class="modal-title">आपका डिवाइस पहले से सब्सक्राइब है!</h2>
-                <p class="modal-desc">Khabar 24 (हिमाचल न्यूज़) से जुड़े रहने के लिए धन्यवाद। आपको महत्वपूर्ण लाइव अलर्ट भेजे जा रहे हैं।</p>
+                <p class="modal-desc">News 24 Himachal से जुड़े रहने के लिए धन्यवाद। आपको महत्वपूर्ण लाइव अलर्ट भेजे जा रहे हैं।</p>
             </div>
             <div class="news-modal-body text-center">
                 <div class="subscribed-status-box">

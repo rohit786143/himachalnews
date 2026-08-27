@@ -1,11 +1,11 @@
 <?php
 /**
  * Homepage (index.php)
- * Himachal News Portal - Khabar 24
+ * News 24 Himachal
  */
 
-$pageTitle = 'हिमाचल न्यूज़ - शिमला, कांगड़ा, मंडी और देवभूमि की ताज़ा ख़बरें';
-$pageDescription = 'हिमाचल प्रदेश का नंबर 1 हिंदी न्यूज़ पोर्टल। ब्रेकिंग न्यूज़, शिमला, कांगड़ा, मंडी, देवभूमि दर्शन, राजनीति, संस्कृति और पर्यटन की हर ख़बर सबसे पहले।';
+$pageTitle = 'News 24 Himachal - शिमला, कांगड़ा, मंडी और देवभूमि की ताज़ा ख़बरें';
+$pageDescription = 'News 24 Himachal - हिमाचल प्रदेश का नंबर 1 हिंदी न्यूज़ पोर्टल। ब्रेकिंग न्यूज़, शिमला, कांगड़ा, मंडी, देवभूमि दर्शन, राजनीति, संस्कृति और पर्यटन की हर ख़बर सबसे पहले।';
 
 require_once __DIR__ . '/includes/header.php';
 
@@ -21,10 +21,10 @@ $kulluNews = getNewsByCategorySlug($pdo, 'himachal-news', 4, 0, 'kullu');
 $kangraNews = getNewsByCategorySlug($pdo, 'himachal-news', 4, 0, 'kangra');
 
 $darshanNews = getNewsByCategorySlug($pdo, 'himachal-darshan', 3);
-$politicsNews = getNewsByCategorySlug($pdo, 'politics', 3);
-$personalityNews = getNewsByCategorySlug($pdo, 'personalities', 3);
-$sportsNews = getNewsByCategorySlug($pdo, 'sports', 3);
-$entertainmentNews = getNewsByCategorySlug($pdo, 'entertainment', 3);
+$rajnitiNews = getNewsByCategorySlug($pdo, 'rajniti', 3);
+$crimeNews = getNewsByCategorySlug($pdo, 'crime', 3);
+$sportsNews = getNewsByCategorySlug($pdo, 'khel', 3);
+$entertainmentNews = getNewsByCategorySlug($pdo, 'manoranjan', 3);
 ?>
 
 <main>
@@ -117,13 +117,13 @@ $entertainmentNews = getNewsByCategorySlug($pdo, 'entertainment', 3);
                             <div class="livetv-badge">
                                 <span class="live-dot"></span> LIVE TV
                             </div>
-                            <span class="livetv-channel-name"><i class="fas fa-satellite-dish"></i> खबर 24 HD</span>
+                            <span class="livetv-channel-name"><i class="fas fa-satellite-dish"></i> न्यूज़ 24 हिमाचल HD</span>
                         </div>
                         
                         <div class="livetv-screen">
                             <iframe 
-                                src="<?= sanitize(getSetting($pdo, 'livetv_url', 'https://www.facebook.com/plugins/video.php?href=https%3A%2F%2Fwww.facebook.com%2Freel%2F3257954534386186%2F&show_text=false&autoplay=true&mute=1&loop=true&width=500')) ?>" 
-                                title="हिमाचल न्यूज़ लाइव टीवी प्रसारण"
+                                src="<?= sanitize(getSetting($pdo, 'livetv_url', 'https://www.facebook.com/plugins/video.php?href=https%3A%2F%2Fwww.facebook.com%2Fshare%2Fv%2F1MJyM4wWgR%2F&show_text=false&autoplay=true&mute=1&loop=true&width=500')) ?>" 
+                                title="News 24 Himachal लाइव टीवी प्रसारण"
                                 allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" 
                                 allowfullscreen="true" 
                                 loading="eager"
@@ -137,7 +137,7 @@ $entertainmentNews = getNewsByCategorySlug($pdo, 'entertainment', 3);
 
                         <div class="livetv-meta-wrap">
                             <h4 class="livetv-show-title">
-                                <i class="fas fa-tv"></i> <?= sanitize(getSetting($pdo, 'site_name', 'Himachal News')) ?>
+                                <i class="fas fa-tv"></i> <?= sanitize(getSetting($pdo, 'site_name', 'News 24 Himachal')) ?>
                             </h4>
                             <p class="livetv-show-desc">शिमला, कांगड़ा, मंडी व कुल्लू से सीधा समाचार प्रसारण</p>
                         </div>
@@ -187,7 +187,7 @@ $entertainmentNews = getNewsByCategorySlug($pdo, 'entertainment', 3);
                 <section style="margin-bottom: 35px;">
                     <div class="section-header">
                         <h2 class="section-title section-title-with-logo">
-                            <img src="assets/images/logo.svg" alt="हिमाचल न्यूज़" class="section-header-logo">
+                            <img src="assets/images/logo.png" alt="News 24 Himachal" class="section-header-logo">
                             <span>(जिलावार खबरें)</span>
                         </h2>
                         <a href="category.php?cat=himachal-news" class="view-all-link">
@@ -293,18 +293,18 @@ $entertainmentNews = getNewsByCategorySlug($pdo, 'entertainment', 3);
                     </div>
                 </section>
 
-                <!-- Block 3: सियासत (Politics - 3 Grid with Image) -->
+                <!-- Block 3: राजनीति (Politics - 3 Grid with Image) -->
                 <section class="home-category-section">
                     <div class="section-header">
                         <h2 class="section-title">
-                            <i class="fas fa-landmark"></i> सियासत
+                            <i class="fas fa-landmark"></i> राजनीति
                         </h2>
-                        <a href="category.php?cat=politics" class="view-all-link">
+                        <a href="category.php?cat=rajniti" class="view-all-link">
                             और देखें <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
                     <div class="cat-grid-3">
-                        <?php foreach ($politicsNews as $pol): ?>
+                        <?php foreach ($rajnitiNews as $pol): ?>
                             <article class="cat-news-card">
                                 <div class="cat-card-img">
                                     <a href="article.php?slug=<?= urlencode($pol['slug']) ?>" title="<?= sanitize($pol['title']) ?>">
@@ -327,38 +327,36 @@ $entertainmentNews = getNewsByCategorySlug($pdo, 'entertainment', 3);
                     </div>
                 </section>
 
-                <!-- Block 4: हस्ती (देवभूमि के गौरव - 3 Grid with Image & Badges) -->
+                <!-- Block 4: क्राइम (Crime - 3 Grid with Image & Badges) -->
                 <section class="home-category-section">
                     <div class="section-header">
                         <h2 class="section-title">
-                            <i class="fas fa-award"></i> हस्ती (देवभूमि के गौरव)
+                            <i class="fas fa-shield-halved"></i> क्राइम
                         </h2>
-                        <a href="category.php?cat=personalities" class="view-all-link">
+                        <a href="category.php?cat=crime" class="view-all-link">
                             और देखें <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
                     <div class="cat-grid-3">
-                        <?php foreach ($personalityNews as $pers): ?>
+                        <?php foreach ($crimeNews as $crime): ?>
                             <article class="cat-news-card">
                                 <div class="cat-card-img">
-                                    <?php if (!empty($pers['subcategory_name'])): ?>
-                                        <span class="cat-card-badge">
-                                            <i class="fas fa-tag"></i> <?= sanitize($pers['subcategory_name']) ?>
-                                        </span>
-                                    <?php endif; ?>
-                                    <a href="article.php?slug=<?= urlencode($pers['slug']) ?>" title="<?= sanitize($pers['title']) ?>">
-                                        <img src="<?= sanitize($pers['image_url']) ?>" alt="<?= sanitize($pers['title']) ?>" loading="lazy">
+                                    <span class="cat-card-badge" style="background: var(--primary-red); color: #fff;">
+                                        <i class="fas fa-handcuffs"></i> क्राइम
+                                    </span>
+                                    <a href="article.php?slug=<?= urlencode($crime['slug']) ?>" title="<?= sanitize($crime['title']) ?>">
+                                        <img src="<?= sanitize($crime['image_url']) ?>" alt="<?= sanitize($crime['title']) ?>" loading="lazy">
                                     </a>
                                 </div>
                                 <div class="cat-card-body">
                                     <h3 class="cat-card-title">
-                                        <a href="article.php?slug=<?= urlencode($pers['slug']) ?>">
-                                            <?= sanitize($pers['title']) ?>
+                                        <a href="article.php?slug=<?= urlencode($crime['slug']) ?>">
+                                            <?= sanitize($crime['title']) ?>
                                         </a>
                                     </h3>
                                     <div class="cat-card-meta">
-                                        <span><i class="far fa-clock"></i> <?= timeAgoHindi($pers['created_at']) ?></span>
-                                        <span><i class="far fa-eye"></i> <?= number_format($pers['views']) ?> व्यूज</span>
+                                        <span><i class="far fa-clock"></i> <?= timeAgoHindi($crime['created_at']) ?></span>
+                                        <span><i class="far fa-eye"></i> <?= number_format($crime['views']) ?> व्यूज</span>
                                     </div>
                                 </div>
                             </article>
@@ -372,7 +370,7 @@ $entertainmentNews = getNewsByCategorySlug($pdo, 'entertainment', 3);
                         <h2 class="section-title">
                             <i class="fas fa-trophy"></i> खेल
                         </h2>
-                        <a href="category.php?cat=sports" class="view-all-link">
+                        <a href="category.php?cat=khel" class="view-all-link">
                             और देखें <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
@@ -406,7 +404,7 @@ $entertainmentNews = getNewsByCategorySlug($pdo, 'entertainment', 3);
                         <h2 class="section-title">
                             <i class="fas fa-film"></i> मनोरंजन
                         </h2>
-                        <a href="category.php?cat=entertainment" class="view-all-link">
+                        <a href="category.php?cat=manoranjan" class="view-all-link">
                             और देखें <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>

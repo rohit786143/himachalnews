@@ -19,7 +19,7 @@ if (!empty($_SESSION['admin_user'])) {
     exit;
 }
 
-$siteName = getSetting($pdo, 'site_name', 'हिमाचल न्यूज़');
+$siteName = getSetting($pdo, 'site_name', 'News 24 Himachal');
 $error = '';
 
 // Handle Login Form Submission
@@ -41,17 +41,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($user && password_verify($password, $user['password'])) {
                 // Successful Login
+                $displayName = !empty($user['full_name']) ? $user['full_name'] : (!empty($user['name']) ? $user['name'] : $user['username']);
+                
                 $_SESSION['admin_user'] = [
                     'id' => (int)$user['id'],
-                    'name' => $user['name'],
+                    'name' => $displayName,
                     'username' => $user['username'],
                     'email' => $user['email'],
                     'role' => $user['role'],
-                    'avatar' => $user['avatar'] ?: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
-                    'designation' => $user['designation'] ?: 'संवाददाता'
+                    'avatar' => $user['avatar'] ?? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+                    'designation' => $user['designation'] ?? 'संपादक'
                 ];
 
-                $_SESSION['flash_message'] = "स्वागत है, <strong>" . sanitize($user['name']) . "</strong>! आप सफलतापूर्वक लॉगिन हो चुके हैं।";
+                $_SESSION['flash_message'] = "स्वागत है, <strong>" . sanitize($displayName) . "</strong>! आप सफलतापूर्वक लॉगिन हो चुके हैं।";
                 $_SESSION['flash_type'] = "success";
 
                 header("Location: /admin/index.php");
@@ -83,9 +85,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     <style>
         :root {
-            --bg-body: #F1F5F9;
-            --primary: #E50914;
-            --primary-hover: #b80710;
+            --bg-body: #F8FAFC;
+            --primary: #E31B23;
+            --primary-hover: #C41219;
+            --primary-blue: #2F3E9E;
             --text-heading: #0F172A;
             --text-main: #1E293B;
             --text-muted: #64748B;
@@ -124,7 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .login-header {
-            background: #12141A;
+            background: #101935;
             padding: 28px 24px;
             text-align: center;
             border-bottom: 3px solid var(--primary);
@@ -243,56 +246,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             box-shadow: 0 6px 18px rgba(229, 9, 20, 0.4);
         }
 
-        .demo-accounts-box {
-            margin-top: 24px;
-            padding: 14px;
-            background: #F8FAFC;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-        }
-
-        .demo-title {
-            font-size: 0.78rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .demo-btn-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-
-        .demo-pill {
-            background: #FFFFFF;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 6px 8px;
-            font-size: 0.78rem;
-            color: var(--text-main);
-            text-align: left;
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
-
-        .demo-pill:hover {
-            border-color: var(--primary);
-            background: #FEF2F2;
-            color: var(--primary);
-        }
-
-        .demo-pill strong {
-            display: block;
-            color: var(--text-heading);
-            font-size: 0.8rem;
-        }
-
         .login-footer {
             padding: 14px 26px 20px;
             text-align: center;
@@ -334,7 +287,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="input-group">
                     <i class="fas fa-user"></i>
                     <input type="text" id="usernameInput" name="username" class="form-control" 
-                           placeholder="उदा: admin या kelang_editor" required autofocus 
+                           placeholder="उदा: admin" required autofocus 
                            value="<?= isset($_POST['username']) ? sanitize($_POST['username']) : '' ?>">
                 </div>
             </div>
@@ -352,23 +305,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <i class="fas fa-right-to-bracket"></i> लॉगिन करें (Login)
             </button>
         </form>
-
-        <!-- Quick 1-Click Demo Login Fillers -->
-        <div class="demo-accounts-box">
-            <div class="demo-title">
-                <i class="fas fa-key"></i> 1-क्लिक टेस्ट लॉगिन (Auto-Fill):
-            </div>
-            <div class="demo-btn-group">
-                <button type="button" class="demo-pill" onclick="fillLogin('admin', 'password123')">
-                    <strong>👑 मुख्य एडमिन</strong>
-                    <span>admin / password123</span>
-                </button>
-                <button type="button" class="demo-pill" onclick="fillLogin('kelang_editor', 'password123')">
-                    <strong>✍️ केलांग संवाददाता</strong>
-                    <span>kelang_editor</span>
-                </button>
-            </div>
-        </div>
     </div>
 
     <div class="login-footer">
@@ -377,14 +313,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </a>
     </div>
 </div>
-
-<script>
-function fillLogin(user, pass) {
-    document.getElementById('usernameInput').value = user;
-    document.getElementById('passwordInput').value = pass;
-    document.getElementById('loginForm').submit();
-}
-</script>
 
 </body>
 </html>

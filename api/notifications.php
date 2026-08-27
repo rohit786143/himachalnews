@@ -1,7 +1,7 @@
 <?php
 /**
- * Manual Push Notification Dispatcher & Client Sync API
- * Himachal News Portal - Khabar 24
+ * Push Notifications Engine API Endpoint
+ * News 24 Himachal
  */
 
 header('Content-Type: application/json; charset=utf-8');
@@ -152,7 +152,7 @@ try {
                 throw new Exception('Device ID is required');
             }
 
-            $testTitle = '🔔 परीक्षण अलर्ट (Test Alert) - हिमाचल न्यूज़';
+            $testTitle = '🔔 परीक्षण अलर्ट (Test Alert) - News 24 Himachal';
             $testMsg = 'यह एक परीक्षण सूचना है। आपके डिवाइस पर लाइव नोटिफिकेशन सफलतापूर्वक सक्रिय है।';
             $testUrl = 'http://localhost:8000';
             $testImg = 'assets/images/logo.png';

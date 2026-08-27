@@ -31,6 +31,8 @@ $adminOnlyPages = [
     'pages.php',
     'page-edit.php',
     'settings.php',
+    'advertisements.php',
+    'live-bulletins.php',
     'users.php',
     'user-edit.php',
     'messages.php',
@@ -54,7 +56,7 @@ unset($_SESSION['flash_message'], $_SESSION['flash_type']);
 $pendingMessages = (int)$pdo->query("SELECT COUNT(*) FROM `contacts`")->fetchColumn();
 $totalSubscribers = (int)$pdo->query("SELECT COUNT(*) FROM `subscribers` WHERE `status` = 'active'")->fetchColumn();
 $totalUsersCount = (int)$pdo->query("SELECT COUNT(*) FROM `users` WHERE `status` = 'active'")->fetchColumn();
-$siteName = getSetting($pdo, 'site_name', 'हिमाचल न्यूज़');
+$siteName = getSetting($pdo, 'site_name', 'News 24 Himachal');
 
 // Ensure proper trailing slash for /admin directory to prevent broken relative links
 if (isset($_SERVER['REQUEST_URI']) && preg_match('#^/admin(\?.*)?$#i', $_SERVER['REQUEST_URI'])) {
@@ -85,22 +87,24 @@ if (isset($_SERVER['REQUEST_URI']) && preg_match('#^/admin(\?.*)?$#i', $_SERVER[
     <style>
         :root {
             /* Bright 70% White / Light palette */
-            --bg-body: #F1F5F9;
+            --bg-body: #F8FAFC;
             --bg-card: #FFFFFF;
-            --bg-card-hover: #F8FAFC;
+            --bg-card-hover: #F1F5F9;
             --bg-input: #FFFFFF;
             --border-color: #E2E8F0;
             --border-light: #CBD5E1;
             
-            /* Signature Red Accent */
-            --primary: #E50914;
-            --primary-hover: #b80710;
-            --primary-light: rgba(229, 9, 20, 0.08);
+            /* Signature Red & Royal Blue Accent */
+            --primary: #E31B23;
+            --primary-hover: #C41219;
+            --primary-light: rgba(227, 27, 35, 0.08);
+            --primary-blue: #2F3E9E;
+            --primary-blue-dark: #1E2B7B;
             
-            /* 20% Black / Dark Charcoal Elements (Sidebar & Deep Typography) */
-            --bg-sidebar: #12141A;
-            --bg-sidebar-card: #1A1E26;
-            --border-sidebar: #222834;
+            /* Navy & Dark Charcoal Elements (Sidebar & Deep Typography) */
+            --bg-sidebar: #101935;
+            --bg-sidebar-card: #182348;
+            --border-sidebar: #1F2E5E;
             --text-heading: #0F172A;
             --text-main: #1E293B;
             --text-muted: #64748B;
@@ -721,21 +725,78 @@ if (isset($_SERVER['REQUEST_URI']) && preg_match('#^/admin(\?.*)?$#i', $_SERVER[
         /* Rich Text Editor Container in Bright Theme */
         .quill-wrapper {
             background: #FFFFFF;
-            border: 1px solid #CBD5E1;
-            border-radius: var(--radius-sm);
+            border: 1.5px solid #CBD5E1;
+            border-radius: var(--radius-md);
             overflow: hidden;
+            box-shadow: var(--shadow-sm);
         }
         .ql-toolbar.ql-snow {
             background: #F8FAFC;
+            border: none !important;
+            border-bottom: 1.5px solid #CBD5E1 !important;
+            padding: 10px 14px !important;
+            font-family: inherit;
+        }
+        .ql-snow .ql-formats {
+            margin-right: 12px !important;
+            margin-bottom: 6px !important;
+        }
+        .ql-snow .ql-picker.ql-header {
+            width: 135px;
+        }
+        .ql-snow .ql-picker.ql-size {
+            width: 100px;
+        }
+        .ql-snow .ql-picker-label {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        .ql-snow .ql-picker-options {
+            border-radius: 6px;
+            box-shadow: var(--shadow-md);
             border-color: #CBD5E1 !important;
         }
+        .ql-snow .ql-toolbar button {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+        .ql-snow .ql-toolbar button:hover,
+        .ql-snow .ql-toolbar button.ql-active,
+        .ql-snow .ql-picker-label:hover,
+        .ql-snow .ql-picker-label.ql-active {
+            background-color: #E2E8F0;
+            color: var(--primary) !important;
+        }
+        .ql-snow .ql-toolbar button:hover .ql-stroke,
+        .ql-snow .ql-toolbar button.ql-active .ql-stroke,
+        .ql-snow .ql-picker-label:hover .ql-stroke,
+        .ql-snow .ql-picker-label.ql-active .ql-stroke {
+            stroke: var(--primary) !important;
+        }
+        .ql-snow .ql-toolbar button:hover .ql-fill,
+        .ql-snow .ql-toolbar button.ql-active .ql-fill,
+        .ql-snow .ql-picker-label:hover .ql-fill,
+        .ql-snow .ql-picker-label.ql-active .ql-fill {
+            fill: var(--primary) !important;
+        }
         .ql-container.ql-snow {
-            border-color: #CBD5E1 !important;
-            min-height: 250px;
-            font-size: 1rem;
+            border: none !important;
+            min-height: 360px;
+            font-size: 1.05rem;
             color: var(--text-heading);
-            font-family: inherit;
+            font-family: 'Hind', -apple-system, BlinkMacSystemFont, sans-serif;
             background: #FFFFFF;
+            line-height: 1.85;
+        }
+        .ql-editor {
+            min-height: 360px;
+            padding: 16px 20px !important;
+        }
+        .ql-editor p {
+            margin-bottom: 14px;
         }
 
         @media (max-width: 992px) {
@@ -861,6 +922,13 @@ if (isset($_SERVER['REQUEST_URI']) && preg_match('#^/admin(\?.*)?$#i', $_SERVER[
                     </div>
                 </a>
 
+                <a href="/admin/live-bulletins.php" class="nav-item <?= $currentPage === 'live-bulletins.php' ? 'active' : '' ?>">
+                    <div class="nav-item-content">
+                        <i class="fas fa-tower-broadcast" style="color: var(--primary-red);"></i>
+                        <span>लाइव बुलेटिन (Live Stream)</span>
+                    </div>
+                </a>
+
                 <span class="menu-label">संपादक एवं उपयोगकर्ता</span>
 
                 <a href="/admin/users.php" class="nav-item <?= in_array($currentPage, ['users.php', 'user-edit.php']) ? 'active' : '' ?>">
@@ -886,6 +954,13 @@ if (isset($_SERVER['REQUEST_URI']) && preg_match('#^/admin(\?.*)?$#i', $_SERVER[
                     <div class="nav-item-content">
                         <i class="fas fa-sliders"></i>
                         <span>साइट सेटिंग्स (Settings)</span>
+                    </div>
+                </a>
+
+                <a href="/admin/advertisements.php" class="nav-item <?= $currentPage === 'advertisements.php' ? 'active' : '' ?>">
+                    <div class="nav-item-content">
+                        <i class="fas fa-rectangle-ad"></i>
+                        <span>विज्ञापन प्रबंधन (Ads)</span>
                     </div>
                 </a>
 

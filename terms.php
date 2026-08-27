@@ -1,7 +1,7 @@
 <?php
 /**
  * Terms of Service Page (terms.php)
- * Himachal News Portal - Khabar 24
+ * News 24 Himachal
  */
 
 require_once __DIR__ . '/config/db.php';
@@ -10,8 +10,8 @@ require_once __DIR__ . '/includes/functions.php';
 $pdo = getDBConnection();
 $page = getPageBySlug($pdo, 'terms');
 
-$pageTitle = 'नियम एवं शर्तें (Terms of Service) - Khabar 24';
-$pageDescription = 'Khabar 24 वेबसाइट उपयोग की नियम व शर्तें।';
+$pageTitle = 'नियम एवं शर्तें (Terms of Service) - News 24 Himachal';
+$pageDescription = 'News 24 Himachal वेबसाइट उपयोग की नियम व शर्तें।';
 
 require_once __DIR__ . '/includes/header.php';
 ?>
@@ -29,7 +29,7 @@ require_once __DIR__ . '/includes/header.php';
                 <?php else: ?>
                     <div class="article-body-content">
                         <h2>वेबसाइट उपयोग की सामान्य शर्तें</h2>
-                        <p>Khabar 24 पोर्टल का उपयोग करने वाले सभी उपयोगकर्ताओं से अपेक्षा की जाती है कि वे डिजिटल नियमों और कॉपीराइट नीतियों का सम्मान करें।</p>
+                        <p>News 24 Himachal पोर्टल का उपयोग करने वाले सभी उपयोगकर्ताओं से अपेक्षा की जाती है कि वे डिजिटल नियमों और कॉपीराइट नीतियों का सम्मान करें।</p>
                     </div>
                 <?php endif; ?>
             </div>

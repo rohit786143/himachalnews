@@ -1,7 +1,7 @@
 <?php
 /**
  * Author / Editor Profile Page (author.php)
- * Himachal News - Khabar 24
+ * News 24 Himachal
  */
 
 require_once __DIR__ . '/config/db.php';
@@ -14,7 +14,7 @@ $author = getAuthorProfile($pdo, $authorIdOrUser);
 
 if (!$author) {
     header("HTTP/1.0 404 Not Found");
-    $pageTitle = 'लेखक प्रोफाइल नहीं मिली - Khabar 24';
+    $pageTitle = 'लेखक प्रोफाइल नहीं मिली - News 24 Himachal';
     require_once __DIR__ . '/includes/header.php';
     echo '<div class="container" style="padding: 80px 20px; text-align: center;">
             <i class="fas fa-user-slash" style="font-size: 3.5rem; color: #E50914; margin-bottom: 20px;"></i>
@@ -39,7 +39,7 @@ $totalViewsStmt = $pdo->prepare("SELECT COALESCE(SUM(views), 0) FROM news WHERE 
 $totalViewsStmt->execute([$author['id']]);
 $authorTotalViews = (int)$totalViewsStmt->fetchColumn();
 
-$pageTitle = sanitize($author['name']) . ' - संवाददाता प्रोफाइल | Khabar 24';
+$pageTitle = sanitize($author['name']) . ' - संवाददाता प्रोफाइल | News 24 Himachal';
 $pageDescription = sanitize($author['bio'] ?: ($author['name'] . ' द्वारा प्रकाशित हिमाचल प्रदेश की ताज़ा खबरें'));
 
 require_once __DIR__ . '/includes/header.php';
@@ -81,7 +81,7 @@ require_once __DIR__ . '/includes/header.php';
                     </div>
 
                     <div style="font-size: 0.95rem; color: #94A3B8; margin-bottom: 12px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
-                        <span><i class="fas fa-id-badge" style="color: var(--primary-red);"></i> <?= sanitize($author['designation'] ?: 'संपादकीय डेस्क • Khabar 24') ?></span>
+                        <span><i class="fas fa-id-badge" style="color: var(--primary-red);"></i> <?= sanitize($author['designation'] ?: 'संपादकीय डेस्क • News 24 Himachal') ?></span>
                         <?php if (!empty($author['location'])): ?>
                             <span><i class="fas fa-location-dot" style="color: var(--primary-red);"></i> <?= sanitize($author['location']) ?></span>
                         <?php endif; ?>

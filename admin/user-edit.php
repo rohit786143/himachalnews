@@ -172,8 +172,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="form-group">
                             <label class="form-label" for="userDesignation">पदनाम (Designation / Bureau)</label>
                             <input type="text" id="userDesignation" name="designation" class="form-control" 
-                                   value="<?= sanitize($user['designation'] ?? ($_POST['designation'] ?? 'संपादकीय डेस्क • Khabar 24')) ?>" 
-                                   placeholder="उदा: केलांग संवाददाता • Khabar 24">
+                                   value="<?= sanitize($user['designation'] ?? ($_POST['designation'] ?? 'संपादकीय डेस्क • News 24 Himachal')) ?>" 
+                                   placeholder="उदा: केलांग संवाददाता • News 24 Himachal">
                         </div>
                     </div>
 

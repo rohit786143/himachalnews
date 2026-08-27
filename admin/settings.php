@@ -16,7 +16,7 @@ $error = null;
 // Handle Settings Save
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_settings'])) {
     $settingsToSave = [
-        'site_name' => trim($_POST['site_name'] ?? 'हिमाचल न्यूज़'),
+        'site_name' => trim($_POST['site_name'] ?? 'News 24 Himachal'),
         'site_tagline' => trim($_POST['site_tagline'] ?? ''),
         'contact_email' => trim($_POST['contact_email'] ?? ''),
         'contact_phone' => trim($_POST['contact_phone'] ?? ''),
@@ -51,9 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_settings'])) {
 }
 
 // Fetch current values
-$siteName = getSetting($pdo, 'site_name', 'हिमाचल न्यूज़');
+$siteName = getSetting($pdo, 'site_name', 'News 24 Himachal');
 $siteTagline = getSetting($pdo, 'site_tagline', 'हिमाचल प्रदेश का नंबर 1 हिंदी न्यूज़ पोर्टल');
-$contactEmail = getSetting($pdo, 'contact_email', 'editor@himachalnews24.com');
+$contactEmail = getSetting($pdo, 'contact_email', 'editor@news24himachal.com');
 $contactPhone = getSetting($pdo, 'contact_phone', '+91 177 265 8900');
 $contactAddress = getSetting($pdo, 'contact_address', 'प्रेस एवेन्यू, माल रोड, शिमला, हिमाचल प्रदेश - 171001');
 $socialFacebook = getSetting($pdo, 'social_facebook', 'https://www.facebook.com');
@@ -61,7 +61,7 @@ $socialTwitter = getSetting($pdo, 'social_twitter', 'https://twitter.com');
 $socialYoutube = getSetting($pdo, 'social_youtube', 'https://youtube.com');
 $socialInstagram = getSetting($pdo, 'social_instagram', 'https://instagram.com');
 $socialTelegram = getSetting($pdo, 'social_telegram', 'https://telegram.org');
-$liveTvUrl = getSetting($pdo, 'livetv_url', 'https://www.facebook.com/plugins/video.php?href=https%3A%2F%2Fwww.facebook.com%2Freel%2F3257954534386186%2F&show_text=false&autoplay=true&mute=1&loop=true&width=500');
+$liveTvUrl = getSetting($pdo, 'livetv_url', 'https://www.facebook.com/plugins/video.php?href=https%3A%2F%2Fwww.facebook.com%2Fshare%2Fv%2F1MJyM4wWgR%2F&show_text=false&autoplay=true&mute=1&loop=true&width=500');
 $pollQuestion = getSetting($pdo, 'poll_question', 'क्या हिमाचल में विंटर टूरिज्म व स्नो-स्पोर्ट्स के लिए नई नीतियां बननी चाहिए?');
 $pollOpt1 = getSetting($pdo, 'poll_opt1', 'हाँ (Yes)');
 $pollOpt1Val = getSetting($pdo, 'poll_opt1_val', '74');

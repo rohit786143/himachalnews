@@ -1,5 +1,6 @@
 /**
- * Himachal News - Main Frontend JavaScript
+ * News 24 Himachal - Main Frontend JavaScript
+ * Live Clock, Category Filtering, Weather, Opinion Poll & Notifications
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -645,7 +646,7 @@ function initLivePushNotificationSync(deviceId) {
     }
 
     function displayPushNotification(notif) {
-        const title = notif.title || 'हिमाचल न्यूज़ अलर्ट';
+        const title = notif.title || 'News 24 Himachal अलर्ट';
         const message = notif.message || '';
         const url = notif.url || 'http://localhost:8000';
         const badge = notif.badge_text || 'ताज़ा खबर';
@@ -657,7 +658,7 @@ function initLivePushNotificationSync(deviceId) {
                 const nativeNotif = new Notification(`${badge}: ${title}`, {
                     body: message,
                     icon: img.startsWith('http') || img.startsWith('/') ? img : `/${img}`,
-                    tag: `himachal-news-${notif.id}`,
+                    tag: `news24-himachal-${notif.id}`,
                     data: { url: url }
                 });
 

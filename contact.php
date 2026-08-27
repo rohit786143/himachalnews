@@ -1,7 +1,7 @@
 <?php
 /**
  * Contact Us Page (contact.php)
- * Himachal News Portal - Khabar 24
+ * News 24 Himachal
  */
 
 if (session_status() === PHP_SESSION_NONE) {
@@ -48,8 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = 'संपर्क करें (Contact Us) - Khabar 24 हिमाचल न्यूज़';
-$pageDescription = 'Khabar 24 न्यूज़ रूम और संपादकीय टीम से संपर्क करें। समाचार सुझाव, प्रेस विज्ञप्ति और विज्ञापन के लिए हमसे जुड़ें।';
+$pageTitle = 'संपर्क करें (Contact Us) - News 24 Himachal';
+$pageDescription = 'News 24 Himachal न्यूज़ रूम और संपादकीय टीम से संपर्क करें। समाचार सुझाव, प्रेस विज्ञप्ति और विज्ञापन के लिए हमसे जुड़ें।';
 
 require_once __DIR__ . '/includes/header.php';
 ?>

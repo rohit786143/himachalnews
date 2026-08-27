@@ -17,9 +17,6 @@ $currentSubSlug = $_GET['sub'] ?? '';
             <li class="nav-item <?= empty($currentSlug) && basename($_SERVER['PHP_SELF']) === 'index.php' ? 'active' : '' ?>">
                 <a href="index.php" class="nav-link"><i class="fas fa-home"></i> होम</a>
             </li>
-            <li class="nav-item">
-                <a href="index.php#livetv-section" class="nav-link nav-live-link"><span class="live-dot" style="background:#fff; width:6px; height:6px; border-radius:50%; display:inline-block; margin-right:4px;"></span> लाइव टीवी</a>
-            </li>
 
             <?php foreach ($navCategories as $cat): ?>
                 <?php 

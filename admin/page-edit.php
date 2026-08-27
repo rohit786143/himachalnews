@@ -124,31 +124,6 @@ require_once __DIR__ . '/includes/header.php';
                             पेज की पूरी सामग्री (Full Page Content / HTML) <span class="required">*</span>
                         </label>
                         <div class="quill-wrapper">
-                            <div id="pageToolbar">
-                                <span class="ql-formats">
-                                    <select class="ql-header">
-                                        <option value="1">Heading 1</option>
-                                        <option value="2">Heading 2</option>
-                                        <option value="3">Heading 3</option>
-                                        <option selected>Normal Text</option>
-                                    </select>
-                                </span>
-                                <span class="ql-formats">
-                                    <button class="ql-bold"></button>
-                                    <button class="ql-italic"></button>
-                                    <button class="ql-underline"></button>
-                                </span>
-                                <span class="ql-formats">
-                                    <button class="ql-list" value="ordered"></button>
-                                    <button class="ql-list" value="bullet"></button>
-                                    <button class="ql-blockquote"></button>
-                                </span>
-                                <span class="ql-formats">
-                                    <button class="ql-link"></button>
-                                    <button class="ql-image"></button>
-                                    <button class="ql-clean"></button>
-                                </span>
-                            </div>
                             <div id="pageQuill" style="min-height: 380px;">
                                 <?= $pageData['content'] ?? ($_POST['content'] ?? '') ?>
                             </div>
@@ -223,13 +198,26 @@ require_once __DIR__ . '/includes/header.php';
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
 
 <script>
-// Initialize Page Quill Editor
+// Full Rich Toolbar Options including Justify, Bold, Italic, H1-H6, Font Sizes, Colors, Lists, Media
+const toolbarOptions = [
+    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+    [{ 'size': ['small', false, 'large', 'huge'] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ 'color': [] }, { 'background': [] }],
+    [{ 'align': '' }, { 'align': 'center' }, { 'align': 'right' }, { 'align': 'justify' }],
+    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+    [{ 'indent': '-1'}, { 'indent': '+1' }],
+    ['blockquote', 'code-block'],
+    ['link', 'image', 'video'],
+    ['clean']
+];
+
 const pageQuill = new Quill('#pageQuill', {
     modules: {
-        toolbar: '#pageToolbar'
+        toolbar: toolbarOptions
     },
     theme: 'snow',
-    placeholder: 'पेज की सामग्री यहाँ दर्ज करें...'
+    placeholder: 'पेज की सामग्री यहाँ दर्ज करें (Bold, Italic, Justify, H1-H6, लिस्ट, कलर, इमेज आदि)...'
 });
 
 const pageForm = document.getElementById('pageForm');

@@ -8,65 +8,183 @@ $recentArticles = getRecentNews($pdo, 4);
 ?>
 <aside class="sidebar">
 
-    <!-- 1. Live Cricket Score Widget -->
-    <div class="widget cricket-score-widget">
-        <div class="widget-header" style="background: linear-gradient(135deg, #1E3A8A, #172554); border-bottom-color: #3B82F6;">
+    <!-- 1. Live Real-Time Cricket Score Widget -->
+    <?php
+    // Fetch initial live match data
+    $liveCricketData = null;
+    $cacheFile = __DIR__ . '/../scratch/cricket_cache.json';
+    if (file_exists($cacheFile)) {
+        $liveCricketData = json_decode(@file_get_contents($cacheFile), true);
+    }
+    $primaryMatch = $liveCricketData['matches'][0] ?? null;
+    ?>
+    <div class="widget cricket-score-widget" id="cricketScoreWidget">
+        <div class="widget-header" style="background: linear-gradient(135deg, #1E3A8A, #172554); border-bottom-color: #3B82F6; padding: 12px 16px;">
             <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                <span><i class="fas fa-baseball-bat-ball" style="color: #60A5FA;"></i> लाइव क्रिकेट स्कोर</span>
-                <span class="live-pulse-badge"><span class="pulse-dot"></span> LIVE</span>
+                <span style="font-weight: 800; font-size: 0.92rem; color: #FFFFFF; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-baseball-bat-ball" style="color: #60A5FA;"></i> लाइव क्रिकेट स्कोर
+                </span>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span id="cricketLiveBadge" class="live-pulse-badge"><span class="pulse-dot"></span> LIVE</span>
+                </div>
             </div>
         </div>
-        <div class="widget-body cricket-card-body">
-            <div class="cricket-match-meta">
-                <span>T20 इंटरनेशनल सीरीज • धर्मशाला</span>
-                <span class="badge-series">मैच 3</span>
+
+        <!-- Ongoing Match Selector Tabs (if multiple matches active) -->
+        <?php if (!empty($liveCricketData['matches']) && count($liveCricketData['matches']) > 1): ?>
+            <div id="cricketMatchTabs" style="display: flex; gap: 4px; overflow-x: auto; background: #0F172A; padding: 6px 10px; border-bottom: 1px solid #1E293B; scrollbar-width: none;">
+                <?php foreach (array_slice($liveCricketData['matches'], 0, 4) as $idx => $m): ?>
+                    <button type="button" class="cricket-tab-btn <?= $idx === 0 ? 'active' : '' ?>" 
+                            data-index="<?= $idx ?>" 
+                            style="padding: 4px 10px; border-radius: 4px; border: none; font-size: 0.72rem; font-weight: 700; white-space: nowrap; cursor: pointer; transition: all 0.2s ease; <?= $idx === 0 ? 'background: #3B82F6; color: #FFFFFF;' : 'background: rgba(255,255,255,0.08); color: #94A3B8;' ?>"
+                            onclick="switchCricketMatch(<?= $idx ?>)">
+                        <?= $m['team1']['flag'] ?> <?= sanitize($m['team1']['name']) ?> v <?= $m['team2']['flag'] ?> <?= sanitize($m['team2']['name']) ?>
+                    </button>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+
+        <div class="widget-body cricket-card-body" id="cricketCardContainer" style="padding: 16px;">
+            <div class="cricket-match-meta" id="cricketSeriesTitle" style="font-size: 0.8rem; font-weight: 700; color: #0284C7; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                <span><?= sanitize($primaryMatch['series'] ?? 'टॉप टूर्नामेंट • लाइव क्रिकेट मैच') ?></span>
+                <span class="badge" style="background: #E0F2FE; color: #0284C7; font-size: 0.68rem; padding: 2px 6px;">आज का मैच</span>
             </div>
             
-            <div class="cricket-teams-row">
-                <!-- Team 1: Australia -->
-                <div class="cricket-team">
-                    <div class="team-flag-box">🇦🇺</div>
-                    <div class="team-name">ऑस्ट्रेलिया</div>
-                    <div class="team-score">194/7 <small>(20.0)</small></div>
+            <div class="cricket-teams-row" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
+                <!-- Team 1 -->
+                <div class="cricket-team <?= (!empty($primaryMatch['team1']['is_batting'])) ? 'active-team' : '' ?>" id="team1Box" style="text-align: center; flex: 1;">
+                    <div class="team-flag-box" id="team1Flag" style="font-size: 1.8rem; line-height: 1; margin-bottom: 4px;">
+                        <?= $primaryMatch['team1']['flag'] ?? '🏏' ?>
+                    </div>
+                    <div class="team-name" id="team1Name" style="font-weight: 800; font-size: 0.88rem; color: var(--text-heading); margin-bottom: 2px;">
+                        <?= sanitize($primaryMatch['team1']['name'] ?? 'टीम 1') ?>
+                    </div>
+                    <div class="team-score <?= (!empty($primaryMatch['team1']['is_batting'])) ? 'highlight' : '' ?>" id="team1Score" style="font-size: 1.1rem; font-weight: 800; color: <?= (!empty($primaryMatch['team1']['is_batting'])) ? 'var(--primary-red)' : 'var(--text-main)' ?>;">
+                        <?= sanitize($primaryMatch['team1']['score'] ?? 'लाइव') ?>
+                    </div>
+                    <?php if (!empty($primaryMatch['team1']['is_batting'])): ?>
+                        <span id="team1BatTag" class="badge badge-red" style="font-size: 0.62rem; margin-top: 4px;">🏏 बैटिंग</span>
+                    <?php else: ?>
+                        <span id="team1BatTag" style="display:none;"></span>
+                    <?php endif; ?>
                 </div>
 
-                <div class="cricket-vs">VS</div>
+                <div class="cricket-vs" style="font-weight: 800; color: #94A3B8; font-size: 0.82rem; padding: 0 8px;">VS</div>
 
-                <!-- Team 2: India -->
-                <div class="cricket-team active-team">
-                    <div class="team-flag-box">🇮🇳</div>
-                    <div class="team-name">भारत</div>
-                    <div class="team-score highlight">182/3 <small>(17.4)</small></div>
+                <!-- Team 2 -->
+                <div class="cricket-team <?= (!empty($primaryMatch['team2']['is_batting'])) ? 'active-team' : '' ?>" id="team2Box" style="text-align: center; flex: 1;">
+                    <div class="team-flag-box" id="team2Flag" style="font-size: 1.8rem; line-height: 1; margin-bottom: 4px;">
+                        <?= $primaryMatch['team2']['flag'] ?? '🏏' ?>
+                    </div>
+                    <div class="team-name" id="team2Name" style="font-weight: 800; font-size: 0.88rem; color: var(--text-heading); margin-bottom: 2px;">
+                        <?= sanitize($primaryMatch['team2']['name'] ?? 'टीम 2') ?>
+                    </div>
+                    <div class="team-score <?= (!empty($primaryMatch['team2']['is_batting'])) ? 'highlight' : '' ?>" id="team2Score" style="font-size: 1.1rem; font-weight: 800; color: <?= (!empty($primaryMatch['team2']['is_batting'])) ? 'var(--primary-red)' : 'var(--text-main)' ?>;">
+                        <?= sanitize($primaryMatch['team2']['score'] ?? 'लाइव') ?>
+                    </div>
+                    <?php if (!empty($primaryMatch['team2']['is_batting'])): ?>
+                        <span id="team2BatTag" class="badge badge-red" style="font-size: 0.62rem; margin-top: 4px;">🏏 बैटिंग</span>
+                    <?php else: ?>
+                        <span id="team2BatTag" style="display:none;"></span>
+                    <?php endif; ?>
                 </div>
             </div>
 
-            <div class="cricket-target-status">
-                <i class="fas fa-flag-checkered"></i> भारत को जीत के लिए <strong>14 गेंदों में 13 रन</strong> चाहिए (RRR: 5.57)
-            </div>
-
-            <!-- Mini Live Batsman/Bowler Box -->
-            <div class="cricket-mini-stats">
-                <div class="stat-player">
-                    <span><i class="fas fa-bat"></i> <strong>विराट कोहली*</strong></span>
-                    <span><strong>76</strong> (42b, 4x6, 6x4)</span>
-                </div>
-                <div class="stat-player">
-                    <span><strong>हार्दिक पांड्या</strong></span>
-                    <span><strong>32</strong> (14b, 3x6)</span>
-                </div>
-                <div class="stat-player bowler-stat">
-                    <span><i class="fas fa-baseball"></i> पैट कमिंस</span>
-                    <span>3.4 ov • 1/34</span>
-                </div>
+            <!-- Live Status / Commentary Tagline -->
+            <div class="cricket-target-status" id="cricketStatusText" style="background: #FEF2F2; border: 1px solid #FECACA; border-radius: 6px; padding: 8px 12px; font-size: 0.82rem; color: #991B1B; margin-bottom: 14px; font-weight: 600; text-align: center;">
+                <i class="fas fa-tower-broadcast" style="color: var(--primary-red); margin-right: 4px;"></i> 
+                <span><?= sanitize($primaryMatch['status_hi'] ?? 'मैच लाइव प्रगति पर है') ?></span>
             </div>
 
             <div class="cricket-footer-action">
-                <a href="category.php?cat=sports" class="cricket-full-card-btn">
-                    फुल स्कोरकार्ड एवं लाइव कमेंट्री &rarr;
+                <a id="cricketLiveLink" href="<?= sanitize($primaryMatch['link'] ?? 'category.php?cat=sports') ?>" target="_blank" rel="noopener" class="cricket-full-card-btn" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 10px; border-radius: 6px; background: linear-gradient(135deg, #1E3A8A, #1D4ED8); color: #FFFFFF; font-weight: 700; font-size: 0.85rem; text-decoration: none; transition: transform 0.2s ease;">
+                    <i class="fas fa-chart-line"></i> फुल लाइव स्कोरकार्ड एवं मैच सेंटर &rarr;
                 </a>
             </div>
         </div>
     </div>
+
+    <!-- Live Cricket Auto-Updater Script -->
+    <script>
+    let currentLiveMatches = <?= json_encode($liveCricketData['matches'] ?? []) ?>;
+    let selectedMatchIndex = 0;
+
+    function renderMatchDetails(idx) {
+        if (!currentLiveMatches || !currentLiveMatches[idx]) return;
+        selectedMatchIndex = idx;
+        const m = currentLiveMatches[idx];
+
+        document.getElementById('cricketSeriesTitle').firstElementChild.textContent = m.series || 'लाइव क्रिकेट मैच';
+        
+        document.getElementById('team1Flag').textContent = m.team1.flag || '🏏';
+        document.getElementById('team1Name').textContent = m.team1.name;
+        document.getElementById('team1Score').textContent = m.team1.score;
+        document.getElementById('team1Score').style.color = m.team1.is_batting ? 'var(--primary-red)' : 'var(--text-main)';
+        
+        const t1Tag = document.getElementById('team1BatTag');
+        if (m.team1.is_batting) {
+            t1Tag.className = 'badge badge-red';
+            t1Tag.style.fontSize = '0.62rem';
+            t1Tag.style.marginTop = '4px';
+            t1Tag.style.display = 'inline-block';
+            t1Tag.textContent = '🏏 बैटिंग';
+        } else {
+            t1Tag.style.display = 'none';
+        }
+
+        document.getElementById('team2Flag').textContent = m.team2.flag || '🏏';
+        document.getElementById('team2Name').textContent = m.team2.name;
+        document.getElementById('team2Score').textContent = m.team2.score;
+        document.getElementById('team2Score').style.color = m.team2.is_batting ? 'var(--primary-red)' : 'var(--text-main)';
+
+        const t2Tag = document.getElementById('team2BatTag');
+        if (m.team2.is_batting) {
+            t2Tag.className = 'badge badge-red';
+            t2Tag.style.fontSize = '0.62rem';
+            t2Tag.style.marginTop = '4px';
+            t2Tag.style.display = 'inline-block';
+            t2Tag.textContent = '🏏 बैटिंग';
+        } else {
+            t2Tag.style.display = 'none';
+        }
+
+        document.getElementById('cricketStatusText').lastElementChild.textContent = m.status_hi;
+        if (m.link) {
+            document.getElementById('cricketLiveLink').href = m.link;
+        }
+
+        // Update tab highlight
+        const tabs = document.querySelectorAll('.cricket-tab-btn');
+        tabs.forEach((tab, i) => {
+            if (i === idx) {
+                tab.style.background = '#3B82F6';
+                tab.style.color = '#FFFFFF';
+            } else {
+                tab.style.background = 'rgba(255,255,255,0.08)';
+                tab.style.color = '#94A3B8';
+            }
+        });
+    }
+
+    function switchCricketMatch(idx) {
+        renderMatchDetails(idx);
+    }
+
+    // Auto-refresh live scores every 30 seconds
+    function fetchLiveCricketUpdates() {
+        fetch('/api/cricket-score.php')
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.success && data.matches && data.matches.length > 0) {
+                    currentLiveMatches = data.matches;
+                    renderMatchDetails(selectedMatchIndex < currentLiveMatches.length ? selectedMatchIndex : 0);
+                }
+            })
+            .catch(err => console.log('Cricket update check:', err));
+    }
+
+    setInterval(fetchLiveCricketUpdates, 30000);
+    </script>
 
     <!-- 2. Interactive Horoscope Widget (आज का राशिफल) -->
     <div class="widget horoscope-widget">
@@ -217,6 +335,41 @@ $recentArticles = getRecentNews($pdo, 4);
         </div>
     </div>
 
+    <!-- 4.5. Sidebar Advertisement Banner Widget (Placed right above Newsletter) -->
+    <?php
+    $adStatus = getSetting($pdo, 'ad_banner_status', 'active');
+    $adImage = getSetting($pdo, 'ad_banner_image', '/assets/images/ad_banner.jpg');
+    $adLink = getSetting($pdo, 'ad_banner_link', 'contact.php');
+    $adTitle = getSetting($pdo, 'ad_banner_title', 'विज्ञापन स्थान (This Space is Available for Advertisement)');
+    ?>
+    <?php if ($adStatus === 'active' && !empty($adImage)): ?>
+        <div class="widget advertisement-widget" style="background: #FFFFFF; border: 1.5px solid var(--border-color); border-radius: var(--radius-md); overflow: hidden; margin-bottom: 24px; box-shadow: var(--shadow-sm); transition: transform 0.2s ease;">
+            <div style="padding: 7px 12px; background: #F8FAFC; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-dim); letter-spacing: 0.5px; display: flex; align-items: center; gap: 5px;">
+                    <i class="fas fa-rectangle-ad" style="color: var(--primary-red);"></i> प्रायोजित विज्ञापन (Sponsored Ad)
+                </span>
+                <a href="contact.php" style="font-size: 0.7rem; font-weight: 700; color: #0284C7; text-decoration: none;">
+                    विज्ञापन दें &rarr;
+                </a>
+            </div>
+            <div style="padding: 8px; text-align: center; background: #0F172A;">
+                <a href="<?= sanitize($adLink) ?>" target="_blank" rel="noopener" style="display: block; overflow: hidden; border-radius: 8px;" title="<?= sanitize($adTitle) ?>">
+                    <img src="<?= sanitize($adImage) ?>" alt="<?= sanitize($adTitle) ?>" 
+                         style="width: 100%; height: auto; aspect-ratio: 1/1; object-fit: cover; display: block; transition: transform 0.3s ease;"
+                         onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                </a>
+            </div>
+            <div style="padding: 8px 12px; background: #F8FAFC; border-top: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 0.74rem; color: var(--text-muted); font-weight: 600;">
+                    <i class="fas fa-bullhorn" style="color: var(--primary-red); font-size: 0.7rem;"></i> यहाँ विज्ञापन लगाने हेतु
+                </span>
+                <a href="contact.php" class="btn-primary" style="padding: 4px 10px; font-size: 0.72rem; border-radius: 4px; text-decoration: none; font-weight: 700;">
+                    संपर्क करें &rarr;
+                </a>
+            </div>
+        </div>
+    <?php endif; ?>
+
     <!-- 5. Newsletter Widget -->
     <div class="newsletter-widget">
         <div class="newsletter-icon">
@@ -224,7 +377,7 @@ $recentArticles = getRecentNews($pdo, 4);
         </div>
         <h3 class="newsletter-title">न्यूज़लेटर सब्सक्राइब करें</h3>
         <p class="newsletter-desc">हिमाचल प्रदेश की हर बड़ी खबर और देवभूमि दर्शन सीधे अपने इनबॉक्स में पाएं।</p>
-        <form class="newsletter-form" onsubmit="event.preventDefault(); alert('धन्यवाद! आपने सफलतापूर्वक हिमाचल न्यूज़ का न्यूज़लेटर सब्सक्राइब कर लिया है।'); this.reset();">
+        <form class="newsletter-form" onsubmit="event.preventDefault(); alert('धन्यवाद! आपने सफलतापूर्वक News 24 Himachal का न्यूज़लेटर सब्सक्राइब कर लिया है।'); this.reset();">
             <input type="email" placeholder="अपना ईमेल दर्ज करें..." required>
             <button type="submit"><i class="fas fa-paper-plane"></i> सब्सक्राइब करें</button>
         </form>

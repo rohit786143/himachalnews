@@ -1,13 +1,13 @@
 <?php
 /**
  * Header Component
- * Himachal News Portal - Khabar 24
+ * News 24 Himachal
  */
 require_once __DIR__ . '/functions.php';
 
 $pdo = getDBConnection();
-$pageTitle = $pageTitle ?? 'Khabar 24 - हिमाचल प्रदेश का प्रमुख हिंदी समाचार पोर्टल';
-$pageDescription = $pageDescription ?? 'हिमाचल न्यूज़, ब्रेकिंग न्यूज़, शिमला, कांगड़ा, मंडी, देवभूमि दर्शन, राजनीति, संस्कृति और ताज़ा खबरें।';
+$pageTitle = $pageTitle ?? 'News 24 Himachal - हिमाचल प्रदेश का प्रमुख हिंदी समाचार पोर्टल';
+$pageDescription = $pageDescription ?? 'News 24 Himachal - ब्रेकिंग न्यूज़, शिमला, कांगड़ा, मंडी, देवभूमि दर्शन, राजनीति, संस्कृति और ताज़ा खबरें।';
 ?>
 <!DOCTYPE html>
 <html lang="hi">
@@ -21,7 +21,7 @@ $pageDescription = $pageDescription ?? 'हिमाचल न्यूज़, �
     <meta property="og:type" content="news">
     <meta property="og:title" content="<?= sanitize($pageTitle) ?>">
     <meta property="og:description" content="<?= sanitize($pageDescription) ?>">
-    <meta property="og:site_name" content="Khabar 24">
+    <meta property="og:site_name" content="News 24 Himachal">
     
     <!-- Google Fonts: Hind (Devanagari) & Poppins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -59,11 +59,11 @@ $pageDescription = $pageDescription ?? 'हिमाचल न्यूज़, �
                     <a href="<?= sanitize(getSetting($pdo, 'social_telegram', '#')) ?>" target="_blank" title="Telegram" aria-label="Telegram"><i class="fab fa-telegram-plane"></i></a>
                 </div>
                 <div class="top-links">
-                    <a href="about.php">हमारे बारे में</a>
-                    <a href="contact.php">संपर्क करें</a>
+                    <a href="about.php">About Us</a>
+                    <a href="contact.php">Contact Us</a>
                 </div>
                 <div class="top-subscribe-wrap">
-                    <button type="button" class="global-subscribe-btn not-subscribed" aria-label="Subscribe to Himachal News">
+                    <button type="button" class="global-subscribe-btn not-subscribed" aria-label="Subscribe to News 24 Himachal">
                         <i class="fas fa-bell"></i>
                         <span class="btn-text">SUBSCRIBE</span>
                     </button>
@@ -76,8 +76,8 @@ $pageDescription = $pageDescription ?? 'हिमाचल न्यूज़, �
     <header class="main-header">
         <div class="container header-main-wrap">
             <div class="header-logo-col">
-                <a href="index.php" class="brand-logo-left" title="हिमाचल न्यूज़ - मुख्य पृष्ठ">
-                    <img src="assets/images/logo.svg" alt="हिमाचल न्यूज़" class="site-main-logo">
+                <a href="index.php" class="brand-logo-left" title="News 24 Himachal - मुख्य पृष्ठ">
+                    <img src="assets/images/logo.png" alt="News 24 Himachal" class="site-main-logo">
                 </a>
             </div>
             <div class="header-search-col">

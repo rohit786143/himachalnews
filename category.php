@@ -1,7 +1,7 @@
 <?php
 /**
  * Category & Subcategory Listing Page
- * Himachal News Portal - Khabar 24
+ * News 24 Himachal
  */
 
 require_once __DIR__ . '/config/db.php';
@@ -27,13 +27,13 @@ if ($subSlug) {
 // Fallback if category not found
 if (!$category && !$subCategory) {
     // Default to latest news
-    $pageTitle = 'सभी समाचार - Khabar 24';
+    $pageTitle = 'सभी समाचार - News 24 Himachal';
     $pageHeading = 'ताज़ा समाचार';
     $articles = getNewsByCategorySlug($pdo, '', $perPage, $offset);
     $totalArticles = countNewsByCategorySlug($pdo, '');
 } else {
     $currentCat = $subCategory ?: $category;
-    $pageTitle = sanitize($currentCat['name']) . ' - समाचार | Khabar 24';
+    $pageTitle = sanitize($currentCat['name']) . ' - समाचार | News 24 Himachal';
     $pageHeading = sanitize($currentCat['name']);
     $articles = getNewsByCategorySlug($pdo, $categorySlug, $perPage, $offset, $subSlug);
     $totalArticles = countNewsByCategorySlug($pdo, $categorySlug, $subSlug);

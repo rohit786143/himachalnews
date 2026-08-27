@@ -1,8 +1,7 @@
 <?php
 /**
- * Device Subscription API
- * Handles 1-click device-based push notifications & subscriptions
- * Himachal News Portal - Khabar 24
+ * Device-Based 1-Click Subscription API Endpoint
+ * News 24 Himachal
  */
 
 header('Content-Type: application/json; charset=utf-8');

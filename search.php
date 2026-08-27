@@ -1,7 +1,7 @@
 <?php
 /**
  * Search Results Page (search.php)
- * Himachal News Portal - Khabar 24
+ * News 24 Himachal
  */
 
 require_once __DIR__ . '/config/db.php';
@@ -22,7 +22,7 @@ if (!empty($query)) {
 }
 
 $totalPages = ceil($totalResults / $perPage);
-$pageTitle = 'खोज परिणाम: ' . sanitize($query) . ' - Khabar 24';
+$pageTitle = 'खोज परिणाम: ' . sanitize($query) . ' - News 24 Himachal';
 
 require_once __DIR__ . '/includes/header.php';
 ?>

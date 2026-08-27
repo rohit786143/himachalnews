@@ -3,9 +3,6 @@
 -- Character Set: utf8mb4 (Full Unicode & Devanagari Hindi support)
 -- =======================================================
 
-CREATE DATABASE IF NOT EXISTS `news_db` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE `news_db`;
-
 -- Drop existing tables in reverse dependency order
 SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `notification_deliveries`;
@@ -27,6 +24,7 @@ CREATE TABLE IF NOT EXISTS `categories` (
     `slug` VARCHAR(150) NOT NULL UNIQUE,
     `description` VARCHAR(255) NULL,
     `display_order` INT DEFAULT 0,
+    `is_nav` TINYINT(1) DEFAULT 0,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT `fk_category_parent` FOREIGN KEY (`parent_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -43,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `news` (
     `excerpt` TEXT NULL,
     `content` LONGTEXT NOT NULL,
     `image_url` VARCHAR(600) NOT NULL,
-    `author` VARCHAR(100) DEFAULT 'संपादकीय टीम (Khabar 24)',
+    `author` VARCHAR(100) DEFAULT 'संपादकीय टीम (News 24 Himachal)',
     `views` INT DEFAULT 0,
     `is_breaking` TINYINT(1) DEFAULT 0,
     `is_featured` TINYINT(1) DEFAULT 0,
@@ -131,73 +129,62 @@ CREATE TABLE IF NOT EXISTS `notification_deliveries` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =======================================================
--- Seed Data: Categories & Subcategories (Explicit IDs)
+-- Seed Data: Categories & Subcategories (Explicit IDs & is_nav)
 -- =======================================================
 
--- 1. ब्रेकिंग न्यूज़
-INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`) VALUES (1, NULL, 'ब्रेकिंग न्यूज़', 'breaking-news', 1);
+-- 1. ब्रेकिंग न्यूज़ (is_nav = 1)
+INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`, `is_nav`) VALUES (1, NULL, 'ब्रेकिंग न्यूज़', 'breaking-news', 1, 1);
 
--- 2. दुनिया
-INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`) VALUES (2, NULL, 'दुनिया', 'world', 2);
+-- 2. राजनीति (is_nav = 1)
+INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`, `is_nav`) VALUES (2, NULL, 'राजनीति', 'rajniti', 2, 1);
 
--- 3. भारत
-INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`) VALUES (3, NULL, 'भारत', 'india', 3);
+-- 3. हिमाचल दर्शन (is_nav = 1)
+INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`, `is_nav`) VALUES (3, NULL, 'हिमाचल दर्शन', 'himachal-darshan', 3, 1);
+INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`, `is_nav`) VALUES
+(18, 3, 'पर्यटन', 'tourism', 1, 0),
+(19, 3, 'कला एवं संस्कृति', 'art-culture', 2, 0),
+(20, 3, 'मेले व उत्सव', 'fairs-festivals', 3, 0),
+(21, 3, 'देव लोक', 'dev-lok', 4, 0),
+(22, 3, 'हमारे देवालय', 'temples', 5, 0),
+(23, 3, 'हमारे देवी-देवता', 'deities', 6, 0),
+(24, 3, 'हमारी देव परम्पराएं', 'traditions', 7, 0);
 
--- 4. हिमाचल न्यूज़
-INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`) VALUES (4, NULL, 'हिमाचल न्यूज़', 'himachal-news', 4);
-INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`) VALUES
-(5, 4, 'शिमला', 'shimla', 1),
-(6, 4, 'कांगड़ा', 'kangra', 2),
-(7, 4, 'मंडी', 'mandi', 3),
-(8, 4, 'हमीरपुर', 'hamirpur', 4),
-(9, 4, 'सोलन', 'solan', 5),
-(10, 4, 'सिरमौर', 'sirmaur', 6),
-(11, 4, 'चंबा', 'chamba', 7),
-(12, 4, 'कुल्लू', 'kullu', 8),
-(36, 4, 'बिलासपुर', 'bilaspur', 9),
-(37, 4, 'ऊना', 'una', 10),
-(38, 4, 'किन्नौर', 'kinnaur', 11),
-(39, 4, 'लाहौल-स्पीति', 'lahaul-spiti', 12);
+-- 4. मनोरंजन (is_nav = 1)
+INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`, `is_nav`) VALUES (4, NULL, 'मनोरंजन', 'manoranjan', 4, 1);
+INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`, `is_nav`) VALUES
+(26, 4, 'मनोरंजन समाचार', 'entertainment-news', 1, 0),
+(27, 4, 'हमारे कलाकार', 'our-artists', 2, 0);
 
--- 5. सियासत
-INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`) VALUES (13, NULL, 'सियासत', 'politics', 5);
+-- 5. खेल (is_nav = 1)
+INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`, `is_nav`) VALUES (5, NULL, 'खेल', 'khel', 5, 1);
 
--- 6. हिमाचल न्यूज़ विशेष
-INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`) VALUES (14, NULL, 'हिमाचल न्यूज़ विशेष', 'himachal-special', 6);
+-- 6. राशिफल (is_nav = 1)
+INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`, `is_nav`) VALUES (6, NULL, 'राशिफल', 'rashiphal', 6, 1);
 
--- 7. जुर्म
-INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`) VALUES (15, NULL, 'जुर्म', 'crime', 7);
+-- 7. क्राइम (is_nav = 1)
+INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`, `is_nav`) VALUES (7, NULL, 'क्राइम', 'crime', 7, 1);
 
--- 8. खेल
-INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`) VALUES (16, NULL, 'खेल', 'sports', 8);
+-- 8. देश (is_nav = 1)
+INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`, `is_nav`) VALUES (8, NULL, 'देश', 'desh', 8, 1);
 
--- 9. हिमाचल दर्शन
-INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`) VALUES (17, NULL, 'हिमाचल दर्शन', 'himachal-darshan', 9);
-INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`) VALUES
-(18, 17, 'पर्यटन', 'tourism', 1),
-(19, 17, 'कला एवं संस्कृति', 'art-culture', 2),
-(20, 17, 'मेले व उत्सव', 'fairs-festivals', 3),
-(21, 17, 'देव लोक', 'dev-lok', 4),
-(22, 17, 'हमारे देवालय', 'temples', 5),
-(23, 17, 'हमारे देवी-देवता', 'deities', 6),
-(24, 17, 'हमारी देव परम्पराएं', 'traditions', 7);
+-- 9. दुनिया (is_nav = 1)
+INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`, `is_nav`) VALUES (9, NULL, 'दुनिया', 'duniya', 9, 1);
 
--- 10. मनोरंजन
-INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`) VALUES (25, NULL, 'मनोरंजन', 'entertainment', 10);
-INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`) VALUES
-(26, 25, 'मनोरंजन समाचार', 'entertainment-news', 1),
-(27, 25, 'हमारे कलाकार', 'our-artists', 2);
-
--- 11. हस्ती (Icons)
-INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`) VALUES (28, NULL, 'हस्ती', 'personalities', 11);
-INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`) VALUES
-(29, 28, 'स्वतंत्रता सेनानी', 'freedom-fighters', 1),
-(30, 28, 'शहीद', 'martyrs', 2),
-(31, 28, 'कलाकार', 'artists', 3),
-(32, 28, 'राजनेता', 'politicians', 4),
-(33, 28, 'साहित्यकार', 'writers', 5),
-(34, 28, 'खिलाड़ी', 'sports-icons', 6),
-(35, 28, 'कर्मवीर', 'karmveer', 7);
+-- 10. हिमाचल न्यूज़ (is_nav = 0)
+INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`, `is_nav`) VALUES (10, NULL, 'हिमाचल न्यूज़', 'himachal-news', 10, 0);
+INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`, `is_nav`) VALUES
+(11, 10, 'शिमला', 'shimla', 1, 0),
+(12, 10, 'कांगड़ा', 'kangra', 2, 0),
+(13, 10, 'मंडी', 'mandi', 3, 0),
+(14, 10, 'हमीरपुर', 'hamirpur', 4, 0),
+(15, 10, 'सोलन', 'solan', 5, 0),
+(16, 10, 'सिरमौर', 'sirmaur', 6, 0),
+(17, 10, 'चंबा', 'chamba', 7, 0),
+(25, 10, 'कुल्लू', 'kullu', 8, 0),
+(36, 10, 'बिलासपुर', 'bilaspur', 9, 0),
+(37, 10, 'ऊना', 'una', 10, 0),
+(38, 10, 'किन्नौर', 'kinnaur', 11, 0),
+(39, 10, 'लाहौल-स्पीति', 'lahaul-spiti', 12, 0);
 
 -- =======================================================
 -- Seed Data: Static CMS Pages
@@ -206,7 +193,7 @@ INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `display_order`) VA
 INSERT INTO `pages` (`title`, `slug`, `content`, `meta_description`) VALUES
 ('हमारे बारे में (About Us)', 'about', 
 '<h2>निष्पक्ष, निर्भीक और सटीक पत्रकारिता</h2>
-<p><strong>Khabar 24 / हिमाचल न्यूज़</strong> देवभूमि हिमाचल प्रदेश का अग्रणी और विश्वसनीय डिजिटल समाचार पोर्टल है। हमारा उद्देश्य हिमाचल के कोने-कोने—शिमला, कांगड़ा, मंडी, कुल्लू, चंबा, सिरमौर, सोलन, हमीरपुर से लेकर लाहौल-स्पीति और किन्नौर तक की हर महत्वपूर्ण खबर को सबसे पहले और प्रमाणिकता के साथ आप तक पहुंचाना है।</p>
+<p><strong>News 24 Himachal (न्यूज़ 24 हिमाचल)</strong> देवभूमि हिमाचल प्रदेश का अग्रणी और विश्वसनीय डिजिटल समाचार पोर्टल है। हमारा उद्देश्य हिमाचल के कोने-कोने—शिमला, कांगड़ा, मंडी, कुल्लू, चंबा, सिरमौर, सोलन, हमीरपुर से लेकर लाहौल-स्पीति और किन्नौर तक की हर महत्वपूर्ण खबर को सबसे पहले और प्रमाणिकता के साथ आप तक पहुंचाना है।</p>
 <h3>हमारा विज़न</h3>
 <p>हम केवल समाचार ही नहीं, बल्कि हिमाचल की समृद्ध संस्कृति, देव परंपराओं, पर्यटन स्थलों और हमारे लोक नायकों की वीर गाथाओं को विश्व पटल पर उजागर करने के लिए प्रतिबद्ध हैं।</p>
 <h3>संपादकीय मूल्य</h3>
@@ -215,25 +202,25 @@ INSERT INTO `pages` (`title`, `slug`, `content`, `meta_description`) VALUES
   <li><strong>जनहित सर्वोपरि:</strong> जनता की समस्याओं को सरकार और प्रशासन तक मजबूती से पहुंचाना।</li>
   <li><strong>सांस्कृतिक संवर्धन:</strong> पहाड़ी भाषा, लोक कला और धरोहर का संरक्षण।</li>
 </ul>',
-'Khabar 24 - हिमाचल प्रदेश का सबसे तेज़ और विश्वसनीय हिंदी न्यूज़ पोर्टल।'),
+'News 24 Himachal - हिमाचल प्रदेश का सबसे तेज़ और विश्वसनीय हिंदी न्यूज़ पोर्टल।'),
 
 ('अस्वीकरण (Disclaimer)', 'disclaimer',
 '<h2>कानूनी अस्वीकरण (Legal Disclaimer)</h2>
-<p>इस न्यूज़ पोर्टल (Khabar 24 / Himachal News) पर प्रकाशित सभी समाचार, लेख, विचार और विश्लेषण सूचनात्मक एवं जनहित के उद्देश्यों से प्रकाशित किए जाते हैं।</p>
+<p>इस न्यूज़ पोर्टल (News 24 Himachal) पर प्रकाशित सभी समाचार, लेख, विचार और विश्लेषण सूचनात्मक एवं जनहित के उद्देश्यों से प्रकाशित किए जाते हैं।</p>
 <h3>सटीकता और संपादन</h3>
 <p>यद्यपि हमारी संपादकीय टीम हर खबर की प्रमाणिकता सुनिश्चित करने का हरसंभव प्रयास करती है, फिर भी किसी अनजाने त्रुटि या टाइपोग्राफिकल भूल के लिए पोर्टल उत्तरदायी नहीं होगा। पाठकों से अनुरोध है कि महत्वपूर्ण निर्णयों से पूर्व संबंधित सरकारी विभाग अथवा आधिकारिक विज्ञप्ति से पुष्टि अवश्य करें।</p>
 <h3>कॉपीराइट और बौद्धिक संपदा</h3>
-<p>पोर्टल पर मौजूद मूल सामग्री, लोगो और डिज़ाइन Khabar 24 की बौद्धिक संपदा हैं। बिना लिखित अनुमति के व्यावसायिक उपयोग प्रतिबंधित है।</p>',
-'Himachal News portal disclaimer and legal editorial terms.'),
+<p>पोर्टल पर मौजूद मूल सामग्री, लोगो और डिज़ाइन News 24 Himachal की बौद्धिक संपदा हैं। बिना लिखित अनुमति के व्यावसायिक उपयोग प्रतिबंधित है।</p>',
+'News 24 Himachal portal disclaimer and legal editorial terms.'),
 
 ('गोपनीयता नीति (Privacy Policy)', 'privacy-policy',
 '<h2>गोपनीयता नीति (Privacy Policy)</h2>
-<p>Khabar 24 पर हम अपने पाठकों की डिजिटल निजता का पूरा सम्मान करते हैं। यह नीति स्पष्ट करती है कि जब आप हमारी वेबसाइट का उपयोग करते हैं तो आपकी जानकारी किस प्रकार सुरक्षित रखी जाती है।</p>
+<p>News 24 Himachal पर हम अपने पाठकों की डिजिटल निजता का पूरा सम्मान करते हैं। यह नीति स्पष्ट करती है कि जब आप हमारी वेबसाइट का उपयोग करते हैं तो आपकी जानकारी किस प्रकार सुरक्षित रखी जाती है।</p>
 <h3>एकत्र की जाने वाली जानकारी</h3>
 <p>हम केवल न्यूज़लेटर सब्सक्रिप्शन और संपर्क फॉर्म के माध्यम से नाम एवं ईमेल जैसी आवश्यक जानकारी पाठक की सहमति से प्राप्त करते हैं। हम आपकी निजी जानकारी किसी तीसरे पक्ष के साथ साझा या विक्रय नहीं करते हैं।</p>
 <h3>कुकीज़ नीति</h3>
 <p>उपयोगकर्ता अनुभव को बेहतर बनाने और वेबसाइट के सुचारू संचालन के लिए मानक ब्राउज़र कुकीज़ का उपयोग किया जा सकता है।</p>',
-'Khabar 24 privacy policy regarding user information and cookie usage.'),
+'News 24 Himachal privacy policy regarding user information and cookie usage.'),
 
 ('नियम एवं शर्तें (Terms & Conditions)', 'terms',
 '<h2>नियम एवं शर्तें (Terms of Service)</h2>
@@ -243,7 +230,7 @@ INSERT INTO `pages` (`title`, `slug`, `content`, `meta_description`) VALUES
   <li>कमेंट या संवाद अनुभाग में किसी भी प्रकार की अभद्र, गैर-कानूनी या भ्रामक टिप्पणी करना प्रतिबंधित है।</li>
   <li>पोर्टल प्रबंधन को किसी भी समय सामग्री या नियमों को अद्यतन करने का पूर्ण अधिकार सुरक्षित है।</li>
 </ol>',
-'Himachal News Terms and conditions of service.');
+'News 24 Himachal Terms and conditions of service.');
 
 -- =======================================================
 -- Seed Data: 155+ Authentic Hindi News Articles (5+ each)
@@ -310,7 +297,7 @@ INSERT INTO `news` (`category_id`, `subcategory_id`, `title`, `slug`, `excerpt`,
 (13, NULL, 'पंचायती राज संस्थाओं का सुदृढ़ीकरण: ग्रामीण विकास योजनाओं के लिए 500 करोड़ का अतिरिक्त बजट आवंटित', 'panchayati-raj-institutions-rural-development-budget-grant', 'पंचायतों को आत्मनिर्भर बनाने के लिए डिजिटल ई-ग्राम स्वराज पोर्टल को सभी 3615 पंचायतों में अनिवार्य किया गया।', '<p><strong>शिमला:</strong> ग्रामीण विकास एवं पंचायती राज विभाग ने गावों में आधारभूत ढांचे को मजबूत करने के लिए नए फंड्स जारी किए हैं।</p>', 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=800&q=80', 'राजनीतिक विश्लेषक', 1980, 0, 0, 0, NOW() - INTERVAL FLOOR(RAND()*72) HOUR),
 (13, NULL, 'नगर निगम चुनाव की बिसात: प्रमुख राजनीतिक दलों ने शुरू की वार्ड स्तर पर जनसंपर्क यात्राएं', 'municipal-corporation-elections-political-parties-campaign', 'शहरी विकास, पार्किंग समस्या और सीवरेज सिस्टम को लेकर राजनीतिक दल जनता के बीच रख रहे हैं अपना विज़न।', '<p><strong>शिमला/मंडी:</strong> आगामी शहरी निकाय चुनावों को लेकर राज्य भर में राजनीतिक सरगर्मियां तेज हो गई हैं।</p>', 'https://images.unsplash.com/photo-1540910419892-4a36d2c3266c?auto=format&fit=crop&w=800&q=80', 'चुनावी डेस्क', 2430, 0, 0, 0, NOW() - INTERVAL FLOOR(RAND()*72) HOUR),
 (13, NULL, 'हिमाचल की ग्रीन स्टेट नीति: 2026 तक राज्य को पहला हरित ऊर्जा राज्य बनाने का रोडमैप तैयार', 'himachal-green-state-policy-2026-renewable-energy-roadmap', 'सरकारी वाहनों को चरणबद्ध तरीके से इलेक्ट्रिक वाहनों में बदला जा रहा है, सोलर प्लांट पर 50% सब्सिडी।', '<p><strong>शिमला:</strong> पर्यावरण संरक्षण और प्रदूषण मुक्त हिमाचल के संकल्प को पूरा करने के लिए ऊर्जा नीति में बड़ा बदलाव किया गया है।</p>', 'https://images.unsplash.com/photo-1509391365360-2e959784a276?auto=format&fit=crop&w=800&q=80', 'विशेष संवाददाता', 3120, 0, 0, 1, NOW() - INTERVAL FLOOR(RAND()*72) HOUR),
-(14, NULL, 'विशेष रिपोर्ट: काष्ठकुणी शैली के सदियों पुराने भूकंपरोधी मकान, आधुनिक इंजीनियरिंग के लिए भी हैं पहेली', 'special-report-kathkuni-architecture-earthquake-resistant-houses', 'बिना सीमेंट और लोहे के सिर्फ लकड़ी और पत्थरों की इंटरलॉकिंग से बने ये घर भीषण भूकंपों में भी सुरक्षित रहे हैं।', '<p><strong>शिमला/कुल्लू:</strong> देवभूमि हिमाचल की प्राचीन वास्तुकला शैली काष्ठकुणी आज पूरे विश्व के आर्किटेक्ट्स के अध्ययन का विषय बनी हुई है।</p>', 'https://images.unsplash.com/photo-1566837945700-30057527ade0?auto=format&fit=crop&w=800&q=80', 'संपादकीय टीम (Khabar 24)', 4560, 0, 0, 1, NOW() - INTERVAL FLOOR(RAND()*72) HOUR),
+(14, NULL, 'विशेष रिपोर्ट: काष्ठकुणी शैली के सदियों पुराने भूकंपरोधी मकान, आधुनिक इंजीनियरिंग के लिए भी हैं पहेली', 'special-report-kathkuni-architecture-earthquake-resistant-houses', 'बिना सीमेंट और लोहे के सिर्फ लकड़ी और पत्थरों की इंटरलॉकिंग से बने ये घर भीषण भूकंपों में भी सुरक्षित रहे हैं।', '<p><strong>शिमला/कुल्लू:</strong> देवभूमि हिमाचल की प्राचीन वास्तुकला शैली काष्ठकुणी आज पूरे विश्व के आर्किटेक्ट्स के अध्ययन का विषय बनी हुई है।</p>', 'https://images.unsplash.com/photo-1566837945700-30057527ade0?auto=format&fit=crop&w=800&q=80', 'संपादकीय टीम (News 24 Himachal)', 4560, 0, 0, 1, NOW() - INTERVAL FLOOR(RAND()*72) HOUR),
 (14, NULL, 'विशेष आलेख: किन्नौरी सेब और गुच्छी मशरूम, जानिए क्यों दुनिया भर में है इनकी इतनी भारी कीमत', 'special-kinnauri-apple-gucchi-mushroom-price-secrets', 'हिमालय की 10,000 फीट की ऊंचाई पर उगने वाली दुर्लभ गुच्छी औषधीय गुणों की खान है जो 30,000 रुपये किलो तक बिकती है।', '<p><strong>रिकांगपिओ (किन्नौर):</strong> प्रकृति के अनमोल वरदान के रूप में हिमाचल के ऊंचे जंगलों में मिलने वाली गुच्छी और कुरकुरे किन्नौरी सेब की मांग वैश्विक बाजारों में चरम पर है।</p>', 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=800&q=80', 'विशेष डेस्क', 3890, 0, 0, 0, NOW() - INTERVAL FLOOR(RAND()*72) HOUR),
 (14, NULL, 'विशेष पड़ताल: स्पीति घाटी का ताबो मोनेस्ट्री, जिसे कहा जाता है हिमालय का अजंता', 'spiti-valley-tabo-monastery-ajanta-of-himalayas-special', '1000 साल से अधिक प्राचीन मिट्टी के इस मठ में सुरक्षित हैं बौद्ध धर्म की दुर्लभ भित्ति चित्र और पांडुलिपियां।', '<p><strong>ताबो (लाहौल-स्पीति):</strong> 996 ईस्वी में स्थापित ताबो बौद्ध विहार प्राचीन भारतीय और तिब्बती कला का बेजोड़ संगम है।</p>', 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80', 'संस्कृति अन्वेषक', 3120, 0, 0, 0, NOW() - INTERVAL FLOOR(RAND()*72) HOUR),
 (14, NULL, 'विशेष स्टोरी: चंद्राताल झील का रहस्य, जहां रात को तारों की छांव में बदलता है पानी का रंग', 'chandratal-lake-mystery-moon-lake-spiti-valley-night-sky', 'समुद्र तल से 14,100 फीट की ऊंचाई पर स्थित अर्धचंद्राकार झील का पानी दिन के अलग-अलग प्रहर में रंग बदलता है।', '<p><strong>लाहौल-स्पीति:</strong> चंद्राताल झील को प्रकृति का एक अद्भुत चमत्कार माना जाता है। फोटोग्राफर्स और खगोल प्रेमियों के लिए यह जन्नत से कम नहीं।</p>', 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80', 'ट्रैवल विशेष डेस्क', 4890, 0, 0, 1, NOW() - INTERVAL FLOOR(RAND()*72) HOUR),
@@ -405,3 +392,28 @@ INSERT INTO `news` (`category_id`, `subcategory_id`, `title`, `slug`, `excerpt`,
 (28, 35, 'श्याम शरण नेगी: आजाद भारत के पहले मतदाता, जिन्होंने 105 वर्ष की उम्र तक हर चुनाव में किया मतदान', 'shyam-saran-negi-independent-india-first-voter-kinnaur', 'किन्नौर के कल्पा निवासी नेगी जी ने 1951 से लेकर 2022 तक 34 बार मतदान कर लोकतंत्र की मिसाल पेश की।', '<p><strong>कल्पा (किन्नौर):</strong> भारतीय चुनाव आयोग के ब्रांड एंबेसडर रहे मास्टर श्याम शरण नेगी का मतदान के प्रति समर्पण लोकतंत्र का अमर अध्याय है।</p>', 'https://images.unsplash.com/photo-1540910419892-4a36d2c3266c?auto=format&fit=crop&w=800&q=80', 'लोकतंत्र के सजग प्रहरी डेस्क', 5420, 0, 0, 1, NOW() - INTERVAL FLOOR(RAND()*72) HOUR),
 (28, 35, 'पद्मश्री विद्यानंद सरैक: सिरमौर की हाटी लोक संस्कृति, पारंपरिक गीतों और नाटी को सहेजने वाले कर्मयोगी', 'vidyanand-saraik-padma-shri-hati-folk-culture-sirmaur', '6 दशकों से अधिक समय तक पहाड़ी लोक विधाओं के संरक्षण और शोध में अपना पूरा जीवन समर्पित कर दिया।', '<p><strong>नाहन (सिरमौर):</strong> विद्यानंद सरैक ने राष्ट्रपति भवन में पद्मश्री ग्रहण कर हिमाचल की लोक संस्कृति का मान बढ़ाया।</p>', 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=80', 'सांस्कृतिक कर्मवीर डेस्क', 2980, 0, 0, 0, NOW() - INTERVAL FLOOR(RAND()*72) HOUR),
 (28, 35, 'पद्मश्री चरनजीत सिंह: 1964 टोक्यो ओलंपिक में भारतीय हॉकी टीम को गोल्ड मेडल जिताने वाले महान कप्तान', 'charanjit-singh-hockey-legend-1964-tokyo-olympic-gold-captain', 'ऊना के मैहतपुर निवासी इस जांबाज मिडफील्डर ने पाकिस्तान को फाइनल में 1-0 से हराकर तिरंगा फहराया था।', '<p><strong>ऊना:</strong> भारतीय हॉकी के स्वर्णिम युग के सूत्रधार रहे चरनजीत सिंह का अनुशासन और खेल कौशल सदा स्मरणीय रहेगा।</p>', 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=800&q=80', 'खेल मनीषी डेस्क', 3120, 0, 0, 0, NOW() - INTERVAL FLOOR(RAND()*72) HOUR);
+
+-- =======================================================
+-- Tables: Live Bulletins & Real-time Live Timeline Updates
+-- =======================================================
+
+CREATE TABLE IF NOT EXISTS `live_bulletins` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `title` VARCHAR(255) NOT NULL,
+    `video_url` VARCHAR(500) NOT NULL,
+    `is_live` TINYINT(1) DEFAULT 0,
+    `description` TEXT NULL,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `bulletin_updates` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `bulletin_id` INT NOT NULL,
+    `timestamp_label` VARCHAR(50) NOT NULL,
+    `headline` TEXT NOT NULL,
+    `badge_type` VARCHAR(50) DEFAULT 'breaking',
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX (`bulletin_id`),
+    CONSTRAINT `fk_bulletin_updates_bulletin` FOREIGN KEY (`bulletin_id`) REFERENCES `live_bulletins` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+

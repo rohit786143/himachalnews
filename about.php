@@ -1,7 +1,7 @@
 <?php
 /**
  * About Us Page (about.php)
- * Himachal News Portal - Khabar 24
+ * News 24 Himachal
  */
 
 require_once __DIR__ . '/config/db.php';
@@ -10,8 +10,8 @@ require_once __DIR__ . '/includes/functions.php';
 $pdo = getDBConnection();
 $page = getPageBySlug($pdo, 'about');
 
-$pageTitle = 'हमारे बारे में (About Us) - Khabar 24 हिमाचल न्यूज़';
-$pageDescription = 'Khabar 24 देवभूमि हिमाचल प्रदेश का प्रमुख डिजिटल न्यूज़ पोर्टल है। जानें हमारी संपादकीय टीम और मूल्यों के बारे में।';
+$pageTitle = 'हमारे बारे में (About Us) - News 24 Himachal';
+$pageDescription = 'News 24 Himachal देवभूमि हिमाचल प्रदेश का प्रमुख डिजिटल न्यूज़ पोर्टल है। जानें हमारी संपादकीय टीम और मूल्यों के बारे में।';
 
 require_once __DIR__ . '/includes/header.php';
 ?>
@@ -31,7 +31,7 @@ require_once __DIR__ . '/includes/header.php';
                 <?php else: ?>
                     <div class="article-body-content">
                         <h2>सत्य, निष्पक्षता और देवभूमि के सरोकार</h2>
-                        <p><strong>Khabar 24</strong> हिमाचल प्रदेश का अग्रणी हिंदी समाचार नेटवर्क है। हमारा लक्ष्य प्रदेश के 12 जिलों से लेकर राजधानी शिमला और देश-विदेश की हर बड़ी खबर को निष्पक्ष रूप से आप तक पहुंचाना है।</p>
+                        <p><strong>News 24 Himachal</strong> हिमाचल प्रदेश का अग्रणी हिंदी समाचार नेटवर्क है। हमारा लक्ष्य प्रदेश के 12 जिलों से लेकर राजधानी शिमला और देश-विदेश की हर बड़ी खबर को निष्पक्ष रूप से आप तक पहुंचाना है।</p>
                     </div>
                 <?php endif; ?>
 

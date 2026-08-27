@@ -251,33 +251,7 @@ require_once __DIR__ . '/includes/header.php';
                             खबर का पूरा विवरण (Full Article Content) <span class="required">*</span>
                         </label>
                         <div class="quill-wrapper">
-                            <div id="editorToolbar">
-                                <span class="ql-formats">
-                                    <select class="ql-header">
-                                        <option value="1">Heading 1</option>
-                                        <option value="2">Heading 2</option>
-                                        <option value="3">Heading 3</option>
-                                        <option selected>Normal Text</option>
-                                    </select>
-                                </span>
-                                <span class="ql-formats">
-                                    <button class="ql-bold"></button>
-                                    <button class="ql-italic"></button>
-                                    <button class="ql-underline"></button>
-                                    <button class="ql-strike"></button>
-                                </span>
-                                <span class="ql-formats">
-                                    <button class="ql-list" value="ordered"></button>
-                                    <button class="ql-list" value="bullet"></button>
-                                    <button class="ql-blockquote"></button>
-                                </span>
-                                <span class="ql-formats">
-                                    <button class="ql-link"></button>
-                                    <button class="ql-image"></button>
-                                    <button class="ql-clean"></button>
-                                </span>
-                            </div>
-                            <div id="quillEditor" style="min-height: 320px;">
+                            <div id="quillEditor" style="min-height: 380px;">
                                 <?= $post['content'] ?? ($_POST['content'] ?? '') ?>
                             </div>
                         </div>
@@ -429,7 +403,7 @@ require_once __DIR__ . '/includes/header.php';
                                 <img src="<?= sanitize($currentUser['avatar']) ?>" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1.5px solid #38BDF8;">
                                 <div>
                                     <strong style="color: var(--text-heading); font-size: 0.9rem; display: block;"><?= sanitize($currentUser['name']) ?></strong>
-                                    <span style="color: var(--text-muted); font-size: 0.76rem;"><?= sanitize($currentUser['designation'] ?? 'संवाददाता • Khabar 24') ?></span>
+                                    <span style="color: var(--text-muted); font-size: 0.76rem;"><?= sanitize($currentUser['designation'] ?? 'संवाददाता • News 24 Himachal') ?></span>
                                 </div>
                             </div>
                             <input type="hidden" name="author" value="<?= sanitize($currentUser['name']) ?>">
@@ -469,13 +443,26 @@ require_once __DIR__ . '/includes/header.php';
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
 
 <script>
-// Initialize Quill Editor
+// Full Rich Toolbar Options including Justify, Bold, Italic, H1-H6, Font Sizes, Colors, Lists, Media
+const toolbarOptions = [
+    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+    [{ 'size': ['small', false, 'large', 'huge'] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ 'color': [] }, { 'background': [] }],
+    [{ 'align': '' }, { 'align': 'center' }, { 'align': 'right' }, { 'align': 'justify' }],
+    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+    [{ 'indent': '-1'}, { 'indent': '+1' }],
+    ['blockquote', 'code-block'],
+    ['link', 'image', 'video'],
+    ['clean']
+];
+
 const quill = new Quill('#quillEditor', {
     modules: {
-        toolbar: '#editorToolbar'
+        toolbar: toolbarOptions
     },
     theme: 'snow',
-    placeholder: 'खबर का पूरा विवरण यहाँ लिखें या पेस्ट करें...'
+    placeholder: 'खबर का पूरा विवरण यहाँ लिखें या पेस्ट करें (Bold, Italic, Justify, H1-H6, लिस्ट, कलर, इमेज आदि)...'
 });
 
 // Sync Quill HTML to hidden input before form submit

@@ -671,7 +671,7 @@ function getSeedArticles() {
             'excerpt' => 'बिना सीमेंट और लोहे के सिर्फ लकड़ी और पत्थरों की इंटरलॉकिंग से बने ये घर भीषण भूकंपों में भी सुरक्षित रहे हैं।',
             'content' => '<p><strong>शिमला/कुल्लू:</strong> देवभूमि हिमाचल की प्राचीन वास्तुकला शैली काष्ठकुणी आज पूरे विश्व के आर्किटेक्ट्स के अध्ययन का विषय बनी हुई है।</p>',
             'image_url' => 'https://images.unsplash.com/photo-1566837945700-30057527ade0?auto=format&fit=crop&w=800&q=80',
-            'author' => 'संपादकीय टीम (Khabar 24)', 'views' => 4560, 'is_breaking' => 0, 'is_featured' => 0, 'is_trending' => 1
+            'author' => 'संपादकीय टीम (News 24 Himachal)', 'views' => 4560, 'is_breaking' => 0, 'is_featured' => 0, 'is_trending' => 1
         ],
         [
             'category_id' => 14, 'subcategory_id' => null,

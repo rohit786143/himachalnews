@@ -1,7 +1,7 @@
 <?php
 /**
- * 1-Click Database Installer & Setup Wizard
- * Himachal News Portal - Khabar 24
+ * Database Setup & Seeder Wizard (install.php)
+ * News 24 Himachal
  */
 
 $status = [];
@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['auto'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Database Setup Wizard - Khabar 24 (Himachal News)</title>
+    <title>Database Setup Wizard - News 24 Himachal</title>
     <link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -219,7 +219,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['auto'])) {
 
 <div class="installer-card">
     <div class="header">
-        <div class="logo-title">KHABAR<span>24</span></div>
+        <div class="logo-title">NEWS<span>24</span> HIMACHAL</div>
         <div class="tagline">1-Click Database Setup & Seeder Wizard</div>
     </div>
 

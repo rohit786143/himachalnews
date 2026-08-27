@@ -95,7 +95,7 @@ if ($isEditor) {
                     </span>
                 </div>
                 <p style="font-size: 0.85rem; color: #94A3B8; margin-top: 4px;">
-                    <i class="fas fa-id-card" style="color: #38BDF8;"></i> <?= sanitize($currentUser['designation'] ?: 'संवाददाता • Khabar 24') ?>
+                    <i class="fas fa-id-card" style="color: #38BDF8;"></i> <?= sanitize($currentUser['designation'] ?: 'संवाददाता • News 24 Himachal') ?>
                     &nbsp;|&nbsp; 
                     <a href="/author.php?id=<?= $currentUserId ?>" target="_blank" style="color: #38BDF8; text-decoration: none; font-weight: 600;">
                         <i class="fas fa-arrow-up-right-from-square"></i> आपकी लाइव पब्लिक प्रोफाइल
@@ -274,7 +274,7 @@ if ($isEditor) {
                         <?= sanitize($currentUser['name']) ?>
                     </h3>
                     <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;">
-                        <?= sanitize($currentUser['designation'] ?: 'संवाददाता • Khabar 24') ?>
+                        <?= sanitize($currentUser['designation'] ?: 'संवाददाता • News 24 Himachal') ?>
                     </p>
                     <a href="/admin/profile.php" class="topbar-btn topbar-btn-secondary" style="width: 100%; justify-content: center; font-size: 0.85rem;">
                         <i class="fas fa-user-pen"></i> प्रोफाइल व पासवर्ड अपडेट करें
@@ -370,6 +370,12 @@ if ($isEditor) {
         </a>
         <a href="/admin/settings.php" class="topbar-btn topbar-btn-secondary" style="padding: 10px 18px;">
             <i class="fas fa-sliders"></i> साइट सेटिंग्स
+        </a>
+        <a href="/admin/advertisements.php" class="topbar-btn topbar-btn-secondary" style="padding: 10px 18px;">
+            <i class="fas fa-rectangle-ad"></i> विज्ञापन प्रबंधन (Ads)
+        </a>
+        <a href="/admin/live-bulletins.php" class="topbar-btn topbar-btn-secondary" style="padding: 10px 18px;">
+            <i class="fas fa-tower-broadcast" style="color: var(--primary-red);"></i> लाइव बुलेटिन
         </a>
         <a href="/admin/notifications.php" class="topbar-btn topbar-btn-secondary" style="padding: 10px 18px;">
             <i class="fas fa-paper-plane"></i> पुश अलर्ट भेजें
