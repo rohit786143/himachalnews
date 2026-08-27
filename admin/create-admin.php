@@ -45,23 +45,20 @@ try {
     $adminEmail = 'admin@news24hp.com';
     $adminPasswordPlain = 'admin123';
     $adminHash = password_hash($adminPasswordPlain, PASSWORD_BCRYPT);
+    $adminDesignation = 'संपादकीय प्रमुख (Chief Editor)';
 
-    // Check if table has `full_name` or `name`
-    $cols = $pdo->query("SHOW COLUMNS FROM `users`")->fetchAll(PDO::FETCH_COLUMN);
-    $nameCol = in_array('full_name', $cols) ? 'full_name' : 'name';
-
-    // Update existing admin or insert new
-    $checkStmt = $pdo->prepare("SELECT id FROM `users` WHERE `username` = ? OR `id` = 1 LIMIT 1");
-    $checkStmt->execute([$adminUsername]);
-    $existing = $checkStmt->fetch();
-
-    if ($existing) {
-        $upd = $pdo->prepare("UPDATE `users` SET `password` = ?, `role` = 'admin', `status` = 'active', `username` = 'admin', `{$nameCol}` = ? WHERE `id` = ?");
-        $upd->execute([$adminHash, $adminName, $existing['id']]);
-    } else {
-        $ins = $pdo->prepare("INSERT INTO `users` (`username`, `email`, `password`, `role`, `status`, `{$nameCol}`) VALUES (?, ?, ?, 'admin', 'active', ?)");
-        $ins->execute([$adminUsername, $adminEmail, $adminHash, $adminName]);
-    }
+    // 3. Insert or Update Admin Record
+    $stmt = $pdo->prepare("
+        INSERT INTO `users` (`name`, `username`, `email`, `password`, `role`, `designation`, `location`, `status`)
+        VALUES (?, ?, ?, ?, 'admin', ?, 'शिमला, हिमाचल प्रदेश', 'active')
+        ON DUPLICATE KEY UPDATE 
+            `password` = VALUES(`password`),
+            `name` = VALUES(`name`),
+            `role` = 'admin',
+            `designation` = VALUES(`designation`),
+            `status` = 'active'
+    ");
+    $stmt->execute([$adminName, $adminUsername, $adminEmail, $adminHash, $adminDesignation]);
 
     // 4. Ensure Navigation Categories are Configured (is_nav column & 9 main items)
     ensureNavCategoriesConfigured($pdo);
